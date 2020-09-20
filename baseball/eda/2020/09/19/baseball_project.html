@@ -94,7 +94,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      4 min read
+      5 min read
     
 </span></p>
 
@@ -148,9 +148,9 @@ window.onload = wrap_img;
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Baseball isn’t associated with good memories for me. I wasn’t very good at it, always hitting foul balls in little league. My parents eventually figured out I needed glasses, but not before I developed a mild disdain for the sport. So it’s with great surprise that I find myself spending so much time thinking about it. Even more so when I make a bet and start cheering for a team. It’s amazing what having some skin in the game will do for your interest level.</p>
 <p>This is the first in a blog series, written in jupyter notebooks, which will show you how to build a program that predicts the outcome of MLB games. We'll be using our web scraping and machine learning skills to build a model that outperforms the sports books.
-<div class="flash flash-error">
-    <svg class="octicon octicon-alert" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M8.22 1.754a.25.25 0 00-.44 0L1.698 13.132a.25.25 0 00.22.368h12.164a.25.25 0 00.22-.368L8.22 1.754zm-1.763-.707c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0114.082 15H1.918a1.75 1.75 0 01-1.543-2.575L6.457 1.047zM9 11a1 1 0 11-2 0 1 1 0 012 0zm-.25-5.25a.75.75 0 00-1.5 0v2.5a.75.75 0 001.5 0v-2.5z"></path></svg>
-    <strong>Warning: </strong>Web scraping is dependant on other people&#8217;s web pages. If they change their site, this blog&#8217;s code will break. Don&#8217;t expect the code presented here to work forever.
+<div class="flash flash-warn">
+    <svg class="octicon octicon-zap" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M10.561 1.5a.016.016 0 00-.01.004L3.286 8.571A.25.25 0 003.462 9H6.75a.75.75 0 01.694 1.034l-1.713 4.188 6.982-6.793A.25.25 0 0012.538 7H9.25a.75.75 0 01-.683-1.06l2.008-4.418.003-.006a.02.02 0 00-.004-.009.02.02 0 00-.006-.006L10.56 1.5zM9.504.43a1.516 1.516 0 012.437 1.713L10.415 5.5h2.123c1.57 0 2.346 1.909 1.22 3.004l-7.34 7.142a1.25 1.25 0 01-.871.354h-.302a1.25 1.25 0 01-1.157-1.723L5.633 10.5H3.462c-1.57 0-2.346-1.909-1.22-3.004L9.503.429z"></path></svg>
+    <strong>Important: </strong>Web scraping is dependant on other people&#8217;s web pages. If they change their site, this blog&#8217;s code will break. Don&#8217;t expect the code presented here to work forever.
 </div></p>
 
 </div>
@@ -263,11 +263,11 @@ window.onload = wrap_img;
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>2020-09-19 22:14:58.829986 2019-05-02 500
-2020-09-19 22:15:26.848715 2019-06-08 1000
-2020-09-19 22:15:54.144147 2019-07-18 1500
-2020-09-19 22:16:23.091523 2019-08-24 2000
-2020-09-19 22:16:53.807905 2019-10-03 2500
+<pre>2020-09-19 22:27:04.916961 2019-05-02 500
+2020-09-19 22:27:34.926041 2019-06-08 1000
+2020-09-19 22:28:03.898110 2019-07-18 1500
+2020-09-19 22:28:33.321147 2019-08-24 2000
+2020-09-19 22:29:04.107770 2019-10-03 2500
 Done! Games downloaded: 2533
 </pre>
 </div>
@@ -447,8 +447,9 @@ Brier Loss: 0.39941569282136896
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The graph above tells us several things about the calibration of the casino's predictions. The reliability curve clearly shows that if the casino says the home team has a 40% chance of winning, over the course of the season very near 40% of those teams will win. The histogram below shows what portion of the games fall into each bucket.</p>
-<p>A metric well suited for calibration measurement is the <a href="https://en.wikipedia.org/wiki/Brier_score">Brier Score</a>, which I'll be using to measure the model effectiveness going forward. Beating 0.399 is the target.</p>
+<p>The graph above tells us several things about the calibration of the casino's predictions. The reliability curve clearly shows that the casino is highly calibrated. Interestingly, it looks like the blue line is shifted down slightly from the "perfectly calibrated" line. It would be a better fit if it was 0.05 higher. This may account for the house advantage.</p>
+<p>The histogram below shows what portion of the games fall into each bin. We see a slight predicted advantage to the home team, with more than 50% of the observations above the 50% mark. Otherwise it looks pretty normally distributed.</p>
+<p>A metric well suited for calibration measurement is the <a href="https://en.wikipedia.org/wiki/Brier_score">Brier Score</a>, which I'll be using to measure the model effectiveness going forward. Getting a model that scores less than 0.3994 is the target.</p>
 
 </div>
 </div>
