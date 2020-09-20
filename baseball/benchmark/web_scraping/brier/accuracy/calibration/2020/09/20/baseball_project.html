@@ -273,11 +273,11 @@ window.onload = wrap_img;
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>2020-09-20 07:06:15.530599 2019-05-02 500
-2020-09-20 07:06:44.327909 2019-06-08 1000
-2020-09-20 07:07:11.075344 2019-07-18 1500
-2020-09-20 07:07:38.829703 2019-08-24 2000
-2020-09-20 07:08:07.881623 2019-10-03 2500
+<pre>2020-09-20 09:18:42.373122 2019-05-02 500
+2020-09-20 09:19:31.667990 2019-06-08 1000
+2020-09-20 09:20:01.571727 2019-07-18 1500
+2020-09-20 09:20:31.480630 2019-08-24 2000
+2020-09-20 09:21:05.637996 2019-10-03 2500
 Done! Games downloaded: 2533
 </pre>
 </div>
@@ -291,7 +291,50 @@ Done! Games downloaded: 2533
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Sportsbook-Accuracy">Sportsbook Accuracy<a class="anchor-link" href="#Sportsbook-Accuracy"> </a></h2><p>Let's see how the sportsbook did in all these games we just downloaded.</p>
+<p>Here's what that data looks like. You can see the moneyline was negative, meaning that the home team was favored. But the home team lost, so the prediction from the casinos was inaccurate in this case.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="n">game_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>{&#39;home_moneyline&#39;: &#39;-155&#39;,
+ &#39;date&#39;: &#39;2019-03-20 05:35:00&#39;,
+ &#39;home_score&#39;: &#39;7&#39;,
+ &#39;away_score&#39;: &#39;9&#39;}</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Sportsbook-Accuracy">Sportsbook Accuracy<a class="anchor-link" href="#Sportsbook-Accuracy"> </a></h2><p>Let's see how the sportsbook did in all the games we just downloaded.</p>
 
 </div>
 </div>
@@ -304,8 +347,13 @@ Done! Games downloaded: 2533
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span>
+
+<span class="c1"># the actual outcome of the game, true if the the home team won</span>
 <span class="n">outcomes</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="c1"># predictions derived from moneyline odds. True if the home team was the favorite</span>
 <span class="n">predictions</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="c1"># probability the home team will win, derived from moneyline odds</span>
+<span class="c1"># derived from formulas at https://www.bettingexpert.com/academy/advanced-betting-theory/odds-conversion-to-percentage</span>
 <span class="n">probabilities</span> <span class="o">=</span> <span class="p">[]</span>
 
 <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">game_data</span><span class="p">:</span>
@@ -321,8 +369,7 @@ Done! Games downloaded: 2533
         <span class="c1"># but we&#39;ll exclude them from our calculations</span>
         <span class="k">continue</span>
 
-    <span class="c1"># convert moneyline odds ot their implied pprobabilities</span>
-    <span class="c1"># https://www.bettingexpert.com/academy/advanced-betting-theory/odds-conversion-to-percentage</span>
+    <span class="c1"># convert moneyline odds ot their implied probabilities</span>
     <span class="k">if</span> <span class="n">moneyline</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">:</span>
         <span class="n">probabilities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="n">moneyline</span><span class="o">/</span><span class="p">(</span><span class="o">-</span><span class="n">moneyline</span> <span class="o">+</span> <span class="mi">100</span><span class="p">))</span>
     <span class="k">elif</span> <span class="n">moneyline</span><span class="o">&gt;</span><span class="mi">100</span><span class="p">:</span>
@@ -358,7 +405,7 @@ Done! Games downloaded: 2533
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>That's it, right? We need a model that is better than 60% accurate.</p>
-<p>It's not so simple if you plan to use this data for betting. If we really want to make money, we would like to know if we think the odds of a team winning are better or worse that what the sportsbook thinks they are. Then we'd be able to use some sort of <a href="https://en.wikipedia.org/wiki/Expected_value">expected value calculation</a> to determine if the bet is profitable.</p>
+<p>If you plan to use this data for betting, you should have more than a win/loss prediction. To really make money, we would like to know if we think the odds of a team winning are better or worse that what the sportsbook thinks they are. Then we'd be able to use some sort of <a href="https://en.wikipedia.org/wiki/Expected_value">expected value calculation</a> to determine if the bet is profitable.</p>
 
 </div>
 </div>
@@ -456,7 +503,7 @@ Done! Games downloaded: 2533
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>The graph above tells us several things about the calibration of the casino's predictions. The reliability curve clearly shows that the casino is highly calibrated. Interestingly, it looks like the blue line is shifted down slightly from the "perfectly calibrated" line. It would be a better fit if it was 0.05 higher. This may account for the house advantage.</p>
 <p>The histogram below shows what portion of the games fall into each bin. We see a slight predicted advantage to the home team, with more than 50% of the observations above the 50% mark. Otherwise it looks pretty normally distributed.</p>
-<p>A metric well suited for calibration measurement is the <a href="https://en.wikipedia.org/wiki/Brier_score">Brier Score</a>, which I'll be using to measure the model effectiveness going forward. Getting a model that scores less than 0.2358 is the target.</p>
+<p>Above, I said the reliability curve looks highly calibrated. If we are to judge our own efforts against the sportsbook, we can't just be eyeballing this graph all the time. A metric would be nice. One metric that is suited for calibration measurement is the <a href="https://en.wikipedia.org/wiki/Brier_score">Brier Score</a>, which I'll be using to measure the model effectiveness going forward. Getting a model that scores less than 0.2358 is the target.</p>
 
 </div>
 </div>
