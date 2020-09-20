@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>MLB Baseball Predictions | rdpharr’s projects</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="MLB Baseball Predictions" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Introducing the baseball betting project." />
+<meta property="og:description" content="Introducing the baseball betting project." />
+<link rel="canonical" href="https://rdpharr.github.io/project_notes/baseball/eda/2020/09/19/baseball_project.html" />
+<meta property="og:url" content="https://rdpharr.github.io/project_notes/baseball/eda/2020/09/19/baseball_project.html" />
+<meta property="og:site_name" content="rdpharr’s projects" />
+<meta property="og:image" content="https://rdpharr.github.io/project_notes/images/chart-preview.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-09-19T00:00:00-05:00" />
+<script type="application/ld+json">
+{"url":"https://rdpharr.github.io/project_notes/baseball/eda/2020/09/19/baseball_project.html","@type":"BlogPosting","headline":"MLB Baseball Predictions","dateModified":"2020-09-19T00:00:00-05:00","datePublished":"2020-09-19T00:00:00-05:00","image":"https://rdpharr.github.io/project_notes/images/chart-preview.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://rdpharr.github.io/project_notes/baseball/eda/2020/09/19/baseball_project.html"},"description":"Introducing the baseball betting project.","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/project_notes/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://rdpharr.github.io/project_notes/feed.xml" title="rdpharr's projects" /><link rel="shortcut icon" type="image/x-icon" href="/project_notes/images/favicon.ico"><link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
+<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement( document.body, {
+        delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "[%", right: "%]", display: true},
+            {left: "$", right: "$", display: false}
+        ]}
+        );
+    });
+    </script>
+
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/project_notes/">rdpharr&#39;s projects</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/project_notes/about/">About Me</a><a class="page-link" href="/project_notes/search/">Search</a><a class="page-link" href="/project_notes/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">MLB Baseball Predictions</h1><p class="page-description">Introducing the baseball betting project.</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-09-19T00:00:00-05:00" itemprop="datePublished">
+        Sep 19, 2020
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      4 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/project_notes/categories/#baseball">baseball</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/project_notes/categories/#EDA">EDA</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-wrap flex-justify-end">
+          <div class="px-2">
+
+    <a href="https://github.com/rdpharr/project_notes/tree/master/_notebooks/2020-09-19-baseball_project.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/project_notes/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://mybinder.org/v2/gh/rdpharr/project_notes/master?filepath=_notebooks%2F2020-09-19-baseball_project.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/project_notes/assets/badges/binder.svg" alt="Open In Binder"/>
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/rdpharr/project_notes/blob/master/_notebooks/2020-09-19-baseball_project.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/project_notes/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2020-09-19-baseball_project.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Baseball isn’t associated with good memories for me. I wasn’t very good at it, always hitting foul balls in little league. My parents eventually figured out I needed glasses, but not before I developed a mild disdain for the sport. So it’s with great surprise that I find myself spending so much time thinking about it. Even more so when I make a bet and start cheering for a team. It’s amazing what having some skin in the game will do for your interest level.</p>
+<p>This is the first in a blog series, written in jupyter notebooks, which will show you how to build a program that predicts the outcome of MLB games. We'll be using our web scraping and machine learning skills to build a model that outperforms the sports books.
+<div class="flash flash-error">
+    <svg class="octicon octicon-alert" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M8.22 1.754a.25.25 0 00-.44 0L1.698 13.132a.25.25 0 00.22.368h12.164a.25.25 0 00.22-.368L8.22 1.754zm-1.763-.707c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0114.082 15H1.918a1.75 1.75 0 01-1.543-2.575L6.457 1.047zM9 11a1 1 0 11-2 0 1 1 0 012 0zm-.25-5.25a.75.75 0 00-1.5 0v2.5a.75.75 0 001.5 0v-2.5z"></path></svg>
+    <strong>Warning: </strong>Web scraping is dependant on other people&#8217;s web pages. If they change their site, this blog&#8217;s code will break. Don&#8217;t expect the code presented here to work forever.
+</div></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Benchmarking-the-Sportsbooks">Benchmarking the Sportsbooks<a class="anchor-link" href="#Benchmarking-the-Sportsbooks"> </a></h1><p>First thing to do is figure out how we’re going to know if we’re doing well. The most intuitive performance benchmark I found was the sportsbooks themselves. If I can make better predictions than the sportsbooks, then I should be doing well.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Downloading-Sportsbook-Data">Downloading Sportsbook Data<a class="anchor-link" href="#Downloading-Sportsbook-Data"> </a></h2><p>We need to start by putting together a database of historic odds and outcomes for MLB games. First step is to get a list of days when games were played. We can get those from <a href="http://baseball-refence.com">baseball-reference.com</a>.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;https://www.baseball-reference.com/leagues/MLB/2019-schedule.shtml&#39;</span>
+<span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+<span class="c1"># All the H3 tags contain day names</span>
+<span class="n">days</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;&lt;h3&gt;(.*2019)&lt;/h3&gt;&quot;</span><span class="p">,</span> <span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+<span class="n">dates</span> <span class="o">=</span> <span class="p">[</span><span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="s2">&quot;%A, %B </span><span class="si">%d</span><span class="s2">, %Y&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">days</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of days MLB was played in 2019:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Number of days MLB was played in 2019: 210
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We need the correct days because we'll be pulling the odds data from <a href="http://covers.com">covers.com</a> by day. Here's how we pull and parse that data.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="n">game_data</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dates</span><span class="p">:</span>
+    <span class="c1"># get the web page with game data on it</span>
+    <span class="n">game_day</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;https://www.covers.com/Sports/MLB/Matchups?selectedDate=</span><span class="si">{</span><span class="n">game_day</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+
+    <span class="c1"># parse the games</span>
+    <span class="n">scraped_games</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">,{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span><span class="s1">&#39;cmg_matchup_game_box&#39;</span><span class="p">})</span>
+    <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">scraped_games</span><span class="p">:</span>
+        <span class="n">game</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">game</span><span class="p">[</span><span class="s1">&#39;home_moneyline&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;data-game-odd&#39;</span><span class="p">]</span>
+        <span class="n">game</span><span class="p">[</span><span class="s1">&#39;away_team_abbr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;data-away-team-shortname-search&#39;</span><span class="p">]</span>
+        <span class="n">game</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;data-game-date&#39;</span><span class="p">]</span>
+        <span class="n">game</span><span class="p">[</span><span class="s1">&#39;home_team_abbr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;data-home-team-shortname-search&#39;</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">game</span><span class="p">[</span><span class="s1">&#39;home_score&#39;</span><span class="p">]</span> <span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">,{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span><span class="s1">&#39;cmg_matchup_list_score_home&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">game</span><span class="p">[</span><span class="s1">&#39;away_score&#39;</span><span class="p">]</span> <span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">,{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span><span class="s1">&#39;cmg_matchup_list_score_away&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">game</span><span class="p">[</span><span class="s1">&#39;home_score&#39;</span><span class="p">]</span> <span class="o">=</span><span class="s1">&#39;&#39;</span>
+            <span class="n">game</span><span class="p">[</span><span class="s1">&#39;away_score&#39;</span><span class="p">]</span> <span class="o">=</span><span class="s1">&#39;&#39;</span>
+
+        <span class="n">game_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">game</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">game_data</span><span class="p">)</span> <span class="o">%</span> <span class="mi">500</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="c1">#show progress</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span> <span class="n">game_day</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">game_data</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Done! Games downloaded:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">game_data</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>2020-09-19 22:14:58.829986 2019-05-02 500
+2020-09-19 22:15:26.848715 2019-06-08 1000
+2020-09-19 22:15:54.144147 2019-07-18 1500
+2020-09-19 22:16:23.091523 2019-08-24 2000
+2020-09-19 22:16:53.807905 2019-10-03 2500
+Done! Games downloaded: 2533
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Sportsbook-Accuracy">Sportsbook Accuracy<a class="anchor-link" href="#Sportsbook-Accuracy"> </a></h2><p>Let's see how the sportsbook did in all these games we just downloaded.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span>
+<span class="n">outcomes</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">probabilities</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">game_data</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">moneyline</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;home_moneyline&#39;</span><span class="p">])</span>
+        <span class="n">home_score</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;home_score&#39;</span><span class="p">])</span>
+        <span class="n">away_score</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;away_score&#39;</span><span class="p">])</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="c1">#incomplete data</span>
+        <span class="k">continue</span>
+    <span class="k">if</span> <span class="n">moneyline</span><span class="o">==</span><span class="mi">100</span><span class="p">:</span>
+        <span class="c1"># it&#39;s rare to have a tossup since covers is averaging the odds from several sports books</span>
+        <span class="c1"># but we&#39;ll exclude them from our calculations</span>
+        <span class="k">continue</span>
+    <span class="c1"># convert moneyline odds ot their implied pprobabilities</span>
+    <span class="c1"># https://www.bettingexpert.com/academy/advanced-betting-theory/odds-conversion-to-percentage</span>
+    <span class="k">elif</span> <span class="n">moneyline</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">probabilities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="n">moneyline</span><span class="o">/</span><span class="p">(</span><span class="o">-</span><span class="n">moneyline</span> <span class="o">+</span> <span class="mi">100</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">moneyline</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">probabilities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">100</span><span class="o">/</span><span class="p">(</span><span class="n">moneyline</span> <span class="o">+</span> <span class="mi">100</span><span class="p">))</span>
+
+    <span class="n">outcomes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">home_score</span><span class="o">&gt;</span><span class="n">away_score</span><span class="p">)</span>
+    <span class="n">predictions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">moneyline</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sportsbook accuracy (excluding tossups):&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="o">*</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">outcomes</span><span class="p">,</span><span class="n">predictions</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Sportsbook accuracy (excluding tossups): 60.05843071786311
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>That's it, right? We need a model that is better than 60% accurate.</p>
+<p>It's not so simple if you plan to use this data for betting. If we really want to make money, we would like to know if we think the odds of a team winning are better or worse that what the sportsbook thinks they are. Then we'd be able to use some sort of <a href="https://en.wikipedia.org/wiki/Expected_value">expected value calculation</a> to determine if the bet is profitable.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Sportsbook-Calibration">Sportsbook Calibration<a class="anchor-link" href="#Sportsbook-Calibration"> </a></h2><p>We really want to know if we can build a model that is better <a href="https://en.wikipedia.org/wiki/Calibration_(statistics">calibrated</a>) than the casino's sportsbooks. High calibration will help us with bet sizing, as well as more sophisticated betting algorithms.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.calibration</span> <span class="kn">import</span> <span class="n">calibration_curve</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">brier_score_loss</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="k">def</span> <span class="nf">cal_curve</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">bins</span><span class="p">):</span>
+    <span class="c1"># adapted from:</span>
+    <span class="c1">#https://scikit-learn.org/stable/auto_examples/calibration/plot_calibration_curve.html</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+    <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot2grid</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">rowspan</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">ax2</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot2grid</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+    <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;k:&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Perfectly calibrated&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_proba</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">brier</span> <span class="o">=</span> <span class="n">brier_score_loss</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy:&quot;</span><span class="p">,</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Brier Loss:&quot;</span><span class="p">,</span><span class="n">brier</span><span class="p">)</span>
+        <span class="n">fraction_of_positives</span><span class="p">,</span> <span class="n">mean_predicted_value</span> <span class="o">=</span> \
+            <span class="n">calibration_curve</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_proba</span><span class="p">,</span> <span class="n">n_bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)</span>
+        <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">mean_predicted_value</span><span class="p">,</span> <span class="n">fraction_of_positives</span><span class="p">,</span>
+                 <span class="n">label</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> (</span><span class="si">%1.4f</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">brier</span><span class="p">))</span>
+        <span class="n">ax2</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">y_proba</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                 <span class="n">histtype</span><span class="o">=</span><span class="s2">&quot;step&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Fraction of positives&quot;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">])</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;lower right&quot;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Calibration plots  (reliability curve)&#39;</span><span class="p">)</span>
+
+    <span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Mean predicted value&quot;</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Count&quot;</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;lower right&quot;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+
+
+
+
+<span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="n">outcomes</span><span class="p">,</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">probabilities</span><span class="p">,</span> <span class="s1">&#39;SportsBook&#39;</span><span class="p">)</span>
+<span class="p">]</span>
+<span class="n">cal_curve</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Accuracy: 0.6005843071786311
+Brier Loss: 0.39941569282136896
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,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hZNFRERERKQA2759O4sWLQptt23blquvvhqA6OhoBg4cSIcOHQAwMz744APq16+fL7Eei5j8DiAoCaiVYbsmsDafYhERERERkQhZs2YNixYt4uyzAyUZBg4cyNKlS/n1118BuPPOOyldunSo/0MPPZQvcUZKQUmwxgE3mdkYoD2w3d3X5XNMIiIiIiKSQ8uXL+err77ihhtuwMx47rnneOmll9i+fTtFixblrrvuCj1jBXDZZZflY7SRl1dl2kcDU4FGZpZkZlea2XVmdl2wy+fACmA58ApwQ17EJSIiIiIix2f58uXcf//9oeekvvvuO2666SZWrFgBwA033MD06dOJjY0FoFOnTnTv3j3f4s1t5p7lo06FQmJios+aNSu/wxAREREROWmsXr2af/7zn1x33XW0bNmSH374gR49evDtt9/StWtXtm3bxu7du6lRI8uadScMM5vt7omZ2wtKkQsRERERESmAtm3bRr9+/Rg7diwAsbGxvPPOOyxbtgyAjh07sm3bNrp27QpAuXLlTvjk6kgKyjNYIiIiIiKSj1JTU4mOjiYtLY2zzz6brl278re//Y0yZcqwbNkytm7dCkC1atXYunUrUVGBsZrY2NjQ9D9RgiUiIiIictJxd7Zt20b58uUBOPfccylZsiTvvfceUVFRVK9enXLlygEQFRXF3LlzDzk+PbmSwynBEhERERE5wR08eJDly5fTpEkTAC699FIWL17M/PnzAejWrRvFixcP9X/99dfzI8wTghIsEREREZETzLZt25gxYwa9evXCzLjjjjt45ZVX2LZtG7GxsQwYMIANGzbg7qH9EhlKsERERERECrlNmzbxxRdfcOGFF1K6dGnefvttbrrpJn7//Xfi4+MZNGgQnTp1Ir2C+AUXXJC/AZ/ANHlSRERERKSQ2bx5M8OGDQtV8ps3bx6DBw9mypQpAFx44YV89913VKtWDYA2bdrQr18/ihQpkm8xnyw0giUiIiIiUsDt2rWLxx57jJ49e9K9e3f27t3LbbfdRunSpWnQoAGdOnVi/vz5NGvWDIDq1atTvXr1fI765KQES0RERESkgHF3brzxRlq2bMm1115LsWLFGD58OGXLlqV79+7UqlWLtWvXhkaoihcvTosWLfI5agElWCIiIiIi+Sa9yATAjTfeSHR0NM8//zxmxi+//BIqox4TE8P69esP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KnfddRcVK1bklVde4ZprruG3337jlFNOYeXKlezbt49GjRopSRERESmADh48SFJSUqiIlEhWihUrRs2aNQ8rKnZcCw0XVEqwJC+tWrWKhx56iL/85S+0atWKH374gTPPPJOvv/6a008/ne3bt7N//34qV66c36GKiIhIGH7//XdKly5NxYoV9cdQyZK7k5yczM6dO6lbt+4h+453oWGRk87WrVvp06cPH3zwAQBFixZl3LhxrFixAoBOnTqxfft2Tj/9dADKli2r5EpERKQQ2bdvn5IrOSIzo2LFijka5dRT63LSO3jwILGxsaSlpXHGGWfQvXt3HnjgAcqWLcv69evZvXs3AFWrVmXTpk2hX8IxMTHExOh/IRERkcJMyZUcTU7vEX06lJOKu7N582YqVaoEwJlnnkmZMmX44IMPiIqKomHDhqG1p6KiopgxY8Yhx+uXsIiIiIgciaYIyglt3759LFiwILTdr18/unfvHto+55xzOPPMM0Pbr7zyCtdee22exigiIiInr+joaFq1akXz5s3p168fe/bsydHxd9xxB82aNeOOO+7I8bUfe+yxQ7ZLlSqV43OE68EHH+Tpp58G4O9//zvffPMNAPHx8WzevPmYzzt37lw+//zzHB/XrVs3cquWgxIsOaEkJyczfvx40ou33H333bRv356DBw8CMGTIEG677bbQ/ltvvZVrrrkm3+IVERGRk1vx4sWZO3cuCxcupEiRIgwfPjys49KXfvnvf//LnDlzeOqpp3J87cwJVl75xz/+Qc+ePcPun3GZm8yONcHKTUqwpFDbsGEDr776Kjt27ADg3Xff5fzzz2flypUADB06lNGjR4cSqvPOO4+hQ4dqqp+IiIgUOF26dGH58uXs3r2bK664grZt29K6dWs++eQTAF5//XX69evH+eefz5lnnkmfPn3YvXs37du3591332XTpk1cdNFFtG3blrZt2zJ58mQAdu3axdChQ2nRogUJCQl8+OGH3H333ezdu5dWrVpx+eWXHxLHwIEDQ9cEuPzyyxk3btxh8T755JO0aNGCli1bcvfddwOB2UBt27alZcuWXHTRRVmOyA0ZMiRURAzgqaeeol27drRr147ly5eH+tx2222cccYZ3HXXXcyYMYOOHTvSunVrOnbsyJIlSzhw4AB///vfeffdd2nVqhXvvvtutu/d3r17GTBgAAkJCfTv35+9e/cez4/qyNy90P536qmnupxcNmzY4P/85z99yZIl7u7+zTffOOBfffWVu7uvW7fOJ0+e7Pv378/PMEVERKQQWLx48SHbXbt29ZEjR7q7+4EDB7xr167+5ptvurv77t27vWvXrj5mzBh3d9+2bZt37drVP/zwQ3d337Rpk3ft2tXHjRvn7oHPJOEoWbKku7sfPHjQ+/Tp4//+97/9nnvuCV1369at3qBBA9+1a5ePHDnSa9So4cnJyYcd7+5+6aWX+k8//eTu7qtWrfLGjRu7u/udd97pt9xyS6jfli1bDjs24/bEiRO9b9++oe8zPj7eDx48eEjfzz//3Dt06OC7d+92dw/FtHnz5lCfv/3tb/7888+7u/sDDzzgTz31lLu7Dx482N9//313d69Tp44/8sgj7u4+atQoP/fcc0N9zj33XE9JSXF39+3bt4di+Prrr/1Pf/qTu7uPHDnSb7zxxtA1s3vvnnnmGR86dKi7u8+bN8+jo6N95syZHq7M94q7OzDLs8hRVORCCrSdO3fy0EMPcdZZZ9GrVy/279/PPffcQ9WqVWnYsCGdOnXi119/pWHDhkCg0l96kQoRERGRgi59FAkCI1hXXnklHTt2ZNy4caFnlvbt28fq1asB6NWrFxUqVMjyXN988w2LFy8Obe/YsYOdO3fyzTffMGbMmFB7+fLljxhT165dufHGG9m4cSNjx47loosuOqxy8jfffMPQoUMpUaIEQCimhQsXct9997Ft2zZ27drFWWedddT34NJLLw19/b//+79Qe79+/YiOjgZg+/btDB48mGXLlmFmocc/MpswYUKW792PP/7IX/7yFwASEhJISEg4alzHSgmWFCjuztVXX02bNm244YYbKF68OKNGjaJq1ar06tWLWrVqsXnzZipWrAgEVtZu1KhRPkctIiIiJ4KJEyeGXsfGxh6yXaJEiUO2y5Yte8h2XFzcIdvh/sE3/RmsjNydDz/88LDPONOnT6dkyZLZnistLY2pU6dSvHjxw86X08cjBg4cyNtvv82YMWMYMWLEYfuzO+eQIUP4+OOPadmyJa+//voh70l2Mp4n4+uM3+v999/PGWecwUcffcTKlSvp1q1blufK7r3LfO7cpGewJF+kpaWFXl999dVcf/31QODGX716NRs3bgQCa02tX7+ev/71r6H+6cmViIiIyInorLPO4oUXXgg9Q/7zzz+HddyZZ57Jiy++GNpOT9wyt2/duhUIJJHZjQQNGTKE5557DoBmzZplea0RI0aEnrHasmULEJh9VK1aNQ4ePMjbb78dVtzvvvtu6GuHDh2y7LN9+3Zq1KgBBJ5FS1e6dGl27twZ2s7uvTv99NND8SxcuJD58+eHFduxUIIleSK9CAXAX/7yFzp27BjaLleu3CFD1RMmTODBBx8MbacPDYuIiIicDO6//34OHjxIQkICzZs35/777w/ruOeff55Zs2aRkJBA06ZNQxUJ77vvPrZu3Urz5s1p2bIl33//PQDXXHMNCQkJhxW5AKhSpQpNmjRh6NChWV7r7LPPpk+fPiQmJtKqVavQlLyHH36Y9u3b06tXLxo3bhxW3Pv376d9+/b861//YtiwYVn2ufPOO7nnnnvo1KkTqampofYzzjiDxYsXh4pcZPfeXX/99ezatYuEhASefPJJ2rVrF1Zsx8LSs7vCKDEx0XOrfr0cu7S0NJYuXRr6n+r+++/n+eefZ8uWLURHRzNy5Eh+++03Hn74YVXzExERkXzzyy+/0KRJk/wOo0Das2cPLVq0YM6cOZQtWza/w8l3Wd0rZjbb3RMz99UzWHLc9u7dy8yZM0lMTKREiRL8+9//5uabb2bNmjXUrFmTnj17UqZMGQ4cOEDx4sWz/UuIiIiIiOS/b775hiuuuILbbrtNydUxUIIlObZr1y4mTJhAu3btqFmzJhMnTuScc87h22+/pXv37vTu3ZsRI0ZQunRpIFCJpmvXrvkctYiIiIiEo2fPnqGqhZJzegZLjmrv3r28/PLLzJgxA4CNGzdy0UUX8emnnwLQuXNnxo0bR2JiYIS0Xr16DB06VH/xEBEREZGTjhIsOYy78/jjj/Pee+8BgUp+t956K2PHjgWgbt26TJs2jSuuuAIIVG85//zzKVOmTL7FLCIiIiJSEGiKoADw6KOPkpaWxv3334+Z8dZbb9GxY0cuueQSYmNjWbp0aag0ppnRvn37fI5YRERERKTgUYJ1Esm4INzjjz/OnDlzQqNUGVf9Bpg1axbFihULbdesWTPvAhURERERKaQ0RfAEtm/fvtDr559/nvr164cW+I2KisLMQouwvfXWW4csBpcxuRIRERGR3PHoo4/SrFkzEhISaNWqFdOnT4/IeSdOnMiUKVOO2qds2bK0atWKhIQEevbsycaNG4/peg8++GBoLawjee6553jjjTeAwOLEvXr1okGDBvTq1Su0AHJG+/bto127drRs2ZJmzZrxwAMPhPbNmzePDh060KJFC84///zQuqsHDhxg6NChtGjRgpYtWzJx4sTDztunTx+aN28e2n7xxRcZOXJkTr/tLCnBOoGsX7+eAwcOAPDGG29QpkwZNmzYAEB8fDzdu3dn9+7dQGCxtnfffTc0oqX1qERERETy1tSpUxk/fjxz5sxh/vz5fPPNN9SqVeu4z5uSkhJWggXQpUsX5s6dy/z582nbti0vvfTScV//SHGNGDGCyy67DAjMqOrRowfLli2jR48ePP7444cdU7RoUb777jvmzZvH3Llz+fLLL5k2bRoAV111FY8//jgLFizgwgsv5KmnngLglVdeAWDBggV8/fXX3H777aFBBoCxY8dSqlSpQ65zxRVX8Pzzz0fk+1SCVUilpaWxcOFCkpOTAfjqq6+oVq1a6K8erVu35vbbbw+NUPXp04dXXnklVDpdRERERPLXunXriIuLo2jRogDExcVRvXp1IPDH8bvuuot27drRrl07li9fDsCqVavo0aMHCQkJ9OjRI1ROfciQIdx2222cccYZ9O/fn+HDhzNs2DBatWrFTz/9xPvvv0/z5s1p2bIlp59++mGxuDs7d+6kfPnyQGB06YILLiAhIYHTTjuN+fPnH7E9o1deeYXevXuzd+/eQ9q/++472rRpQ0xM4CmlTz75hMGDBwMwePBgPv7448POZWahZOjgwYMcPHgwNDCwZMmS0PfSq1cvPvzwQyDw6EuPHj0AqFy5MuXKlWPWrFlAYLmhZ599lvvuu++Q65QoUYL4+PhQ1ezjoWewComUlBQmTZpEtWrVaNSoEcuWLaNFixa88sorXHXVVbRt25ann36a+Ph4AFq0aME///nP/A1aREREpJB46NNFLF67I6LnbFq9DA+c3yzb/WeeeSb/+Mc/aNiwIT179qR///6HrB1apkwZZsyYwRtvvMGtt97K+PHjuemmmxg0aBCDBw9mxIgR/OUvfwklJkuXLuWbb74hOjqaBx98kFKlSvHXv/4VCHw2/Oqrr6hRowbbtm0LXeOnn36iVatWJCcnU7JkSR577DEAHnjgAVq3bs3HH3/Md999x6BBg5g7d2627elefPFFJkyYwMcffxxKHNNNnjyZU089NbS9YcMGqlWrBkC1atWynZ6YmprKqaeeyvLly7nxxhtDxdaaN2/OuHHj6Nu3L++//z5r1qwBoGXLlnzyyScMGDCANWvWMHv2bNasWUO7du24//77uf322ylRosRh10lMTOSnn36iXbt22f7MwqERrALK3fnwww/57rvvgECCddZZZ/Haa68B0LBhQ958803OOeccACpUqMDtt98ekWFlEREREcl9pUqVYvbs2bz88stUqlSJ/v378/rrr4f2X3rppaGvU6dOBQLTCtOn2A0cOJBJkyaF+vfr14/o6Ogsr9WpUyeGDBnCK6+8Qmpqaqg9fYrgmjVrGDp0KHfeeScAkyZNYuDAgQB0796d5ORktm/fnm07wJtvvskXX3zBhx9+eFhyBYERu0qVKuX4fYqOjmbu3LkkJSUxY8YMFi5cCMCIESN46aWXOPXUU9m5cydFihQBAtP9atasSWJiIrfeeisdO3YkJiaGuXPnsnz5ci688MIsr1O5cmXWrl2b4/gy0whWAfL222+zb98+rrzySsyMe++9l2bNmtG9e3eKFSvGt99+S9OmTYHAcOmf//znfI5YRERE5MRwpJGm3BQdHU23bt3o1q0bLVq0YNSoUQwZMgQ49Bn57J6Xz9hesmTJbK8zfPhwpk+fzmeffUarVq0OGXVK16dPHy666CKA0GMmma+VXTsERpTSE6G6dese1q948eKHFGGrUqUK69ato1q1aqxbt47KlStnGz9AuXLl6NatG19++SXNmzencePGTJgwAQiM3n322WdAYA3XYcOGhY7r2LEjDRo04IcffmD27NnEx8eTkpLCxo0b6datW6gIxr59+yhevPgRYwiHRrDy0RtvvBEatgUYM2bMIX+1+PLLLxkzZkxou3PnzlSoUCEvQxQRERGRXLJkyRKWLVsW2p47dy516tQJbb/77ruhrx06dAACyUL658O3336bzp07Z3nu0qVLs3PnztD2b7/9Rvv27fnHP/5BXFxcaDpdRpMmTaJevXoAnH766aEK0xMnTiQuLo4yZcpk2w6BGgD//e9/6dOnT5YjQU2aNAk9SwaBhG7UqFEAjBo1ir59+x52zKZNm0JTGvfu3cs333xD48aNAUJTCtPS0njkkUe47rrrANizZ0+osNvXX39NTEwMTZs25frrr2ft2rWsXLmSSZMm0bBhw0MqDC5d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
+" />
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The graph above tells us several things about the calibration of the casino's predictions. The reliability curve clearly shows that if the casino says the home team has a 40% chance of winning, over the course of the season very near 40% of those teams will win. The histogram below shows what portion of the games fall into each bucket.</p>
+<p>A metric well suited for calibration measurement is the <a href="https://en.wikipedia.org/wiki/Brier_score">Brier Score</a>, which I'll be using to measure the model effectiveness going forward. Beating 0.399 is the target.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Next-Up">Next Up<a class="anchor-link" href="#Next-Up"> </a></h1><p>Next, we'll start building out our historic data and training the model using XGBoost and LightGBM.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="rdpharr/project_notes"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/project_notes/baseball/eda/2020/09/19/baseball_project.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/project_notes/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/project_notes/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/project_notes/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>My data and analysis blog</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/rdpharr" title="rdpharr"><svg class="svg-icon grey"><use xlink:href="/project_notes/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/rdpharr" title="rdpharr"><svg class="svg-icon grey"><use xlink:href="/project_notes/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
