@@ -94,7 +94,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      15 min read
+      14 min read
     
 </span></p>
 
@@ -156,7 +156,14 @@ window.onload = wrap_img;
 </li>
 <li class="toc-entry toc-h2"><a href="#Prep-Data-for-Modelling">Prep Data for Modelling </a>
 <ul>
-<li class="toc-entry toc-h3"><a href="#Load-data-into-DataFrames">Load data into DataFrames </a></li>
+<li class="toc-entry toc-h3"><a href="#Load-data-into-DataFrames">Load data into DataFrames </a>
+<ul>
+<li class="toc-entry toc-h4"><a href="#Game-DF">Game DF </a></li>
+<li class="toc-entry toc-h4"><a href="#Batting-DF">Batting DF </a></li>
+<li class="toc-entry toc-h4"><a href="#Pitching-DF">Pitching DF </a></li>
+<li class="toc-entry toc-h4"><a href="#Pitcher-DF">Pitcher DF </a></li>
+</ul>
+</li>
 <li class="toc-entry toc-h3"><a href="#Calculate-Differences-in-the-Statistics">Calculate Differences in the Statistics </a></li>
 </ul>
 </li>
@@ -846,6 +853,17 @@ window.onload = wrap_img;
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Game-DF">
+<a class="anchor" href="#Game-DF" aria-hidden="true"><span class="octicon octicon-link"></span></a>Game DF<a class="anchor-link" href="#Game-DF"> </a>
+</h4>
+<p>This one is where we'll eventually put all of our stats</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -950,6 +968,17 @@ window.onload = wrap_img;
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Batting-DF">
+<a class="anchor" href="#Batting-DF" aria-hidden="true"><span class="octicon octicon-link"></span></a>Batting DF<a class="anchor-link" href="#Batting-DF"> </a>
+</h4>
+<p>Stats about batting, one row per team per game</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -1152,6 +1181,17 @@ window.onload = wrap_img;
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Pitching-DF">
+<a class="anchor" href="#Pitching-DF" aria-hidden="true"><span class="octicon octicon-link"></span></a>Pitching DF<a class="anchor-link" href="#Pitching-DF"> </a>
+</h4>
+<p>Team pitching stats, one row per team per game</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -1170,189 +1210,20 @@ window.onload = wrap_img;
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_html rendered_html output_subarea output_execute_result">
-<div>
-<style scoped="">
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>IP</th>
-      <th>H</th>
-      <th>R</th>
-      <th>ER</th>
-      <th>BB</th>
-      <th>SO</th>
-      <th>HR</th>
-      <th>earned_run_avg</th>
-      <th>batters_faced</th>
-      <th>pitches</th>
-      <th>...</th>
-      <th>inplay_unk</th>
-      <th>game_score</th>
-      <th>inherited_runners</th>
-      <th>inherited_score</th>
-      <th>wpa_def</th>
-      <th>leverage_index_avg</th>
-      <th>re24_def</th>
-      <th>is_home_team</th>
-      <th>team</th>
-      <th>game_id</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>8.0</td>
-      <td>9.0</td>
-      <td>4.0</td>
-      <td>3.0</td>
-      <td>2.0</td>
-      <td>3.0</td>
-      <td>0.0</td>
-      <td>3.38</td>
-      <td>33.0</td>
-      <td>114.0</td>
-      <td>...</td>
-      <td>0.0</td>
-      <td>39.0</td>
-      <td>2.0</td>
-      <td>1.0</td>
-      <td>-0.051</td>
-      <td>0.74</td>
-      <td>0.1</td>
-      <td>False</td>
-      <td>NYM</td>
-      <td>KCA201604030</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>9.0</td>
-      <td>7.0</td>
-      <td>3.0</td>
-      <td>3.0</td>
-      <td>6.0</td>
-      <td>9.0</td>
-      <td>0.0</td>
-      <td>3.00</td>
-      <td>39.0</td>
-      <td>177.0</td>
-      <td>...</td>
-      <td>0.0</td>
-      <td>70.0</td>
-      <td>2.0</td>
-      <td>0.0</td>
-      <td>0.449</td>
-      <td>1.58</td>
-      <td>1.7</td>
-      <td>True</td>
-      <td>KCR</td>
-      <td>KCA201604030</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>8.0</td>
-      <td>9.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>5.0</td>
-      <td>5.0</td>
-      <td>0.0</td>
-      <td>4.50</td>
-      <td>36.0</td>
-      <td>144.0</td>
-      <td>...</td>
-      <td>0.0</td>
-      <td>48.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>-0.069</td>
-      <td>0.71</td>
-      <td>-0.1</td>
-      <td>False</td>
-      <td>STL</td>
-      <td>PIT201604030</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>9.0</td>
-      <td>5.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>5.0</td>
-      <td>14.0</td>
-      <td>0.0</td>
-      <td>1.00</td>
-      <td>38.0</td>
-      <td>141.0</td>
-      <td>...</td>
-      <td>0.0</td>
-      <td>71.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.431</td>
-      <td>1.27</td>
-      <td>3.4</td>
-      <td>True</td>
-      <td>PIT</td>
-      <td>PIT201604030</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>9.0</td>
-      <td>7.0</td>
-      <td>3.0</td>
-      <td>3.0</td>
-      <td>1.0</td>
-      <td>7.0</td>
-      <td>1.0</td>
-      <td>3.00</td>
-      <td>36.0</td>
-      <td>118.0</td>
-      <td>...</td>
-      <td>0.0</td>
-      <td>62.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>0.366</td>
-      <td>0.98</td>
-      <td>1.3</td>
-      <td>False</td>
-      <td>TOR</td>
-      <td>TBA201604030</td>
-    </tr>
-  </tbody>
-</table>
-<p>5 rows × 27 columns</p>
-</div>
-</div>
-
-</div>
-
-</div>
-</div>
-
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Pitcher-DF">
+<a class="anchor" href="#Pitcher-DF" aria-hidden="true"><span class="octicon octicon-link"></span></a>Pitcher DF<a class="anchor-link" href="#Pitcher-DF"> </a>
+</h4>
+<p>Individual pitching stats (starting pitchers only), one row per pitcher per game</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -1371,186 +1242,6 @@ window.onload = wrap_img;
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_html rendered_html output_subarea output_execute_result">
-<div>
-<style scoped="">
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>IP</th>
-      <th>H</th>
-      <th>R</th>
-      <th>ER</th>
-      <th>BB</th>
-      <th>SO</th>
-      <th>HR</th>
-      <th>earned_run_avg</th>
-      <th>batters_faced</th>
-      <th>pitches</th>
-      <th>...</th>
-      <th>inplay_ld</th>
-      <th>inplay_unk</th>
-      <th>game_score</th>
-      <th>wpa_def</th>
-      <th>leverage_index_avg</th>
-      <th>re24_def</th>
-      <th>name</th>
-      <th>is_home_team</th>
-      <th>team</th>
-      <th>game_id</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>5.2</td>
-      <td>8.0</td>
-      <td>4.0</td>
-      <td>3.0</td>
-      <td>2.0</td>
-      <td>2.0</td>
-      <td>0.0</td>
-      <td>4.76</td>
-      <td>25.0</td>
-      <td>83.0</td>
-      <td>...</td>
-      <td>5.0</td>
-      <td>0.0</td>
-      <td>39.0</td>
-      <td>-0.061</td>
-      <td>0.86</td>
-      <td>-0.4</td>
-      <td>harvema01</td>
-      <td>False</td>
-      <td>NYM</td>
-      <td>KCA201604030</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>6.0</td>
-      <td>2.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>3.0</td>
-      <td>5.0</td>
-      <td>0.0</td>
-      <td>0.00</td>
-      <td>22.0</td>
-      <td>106.0</td>
-      <td>...</td>
-      <td>2.0</td>
-      <td>0.0</td>
-      <td>70.0</td>
-      <td>0.350</td>
-      <td>0.92</td>
-      <td>3.1</td>
-      <td>volqued01</td>
-      <td>True</td>
-      <td>KCR</td>
-      <td>KCA201604030</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>6.0</td>
-      <td>6.0</td>
-      <td>3.0</td>
-      <td>3.0</td>
-      <td>3.0</td>
-      <td>3.0</td>
-      <td>0.0</td>
-      <td>4.50</td>
-      <td>26.0</td>
-      <td>96.0</td>
-      <td>...</td>
-      <td>6.0</td>
-      <td>0.0</td>
-      <td>48.0</td>
-      <td>-0.069</td>
-      <td>0.90</td>
-      <td>-0.1</td>
-      <td>wainwad01</td>
-      <td>False</td>
-      <td>STL</td>
-      <td>PIT201604030</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>6.0</td>
-      <td>3.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>5.0</td>
-      <td>10.0</td>
-      <td>0.0</td>
-      <td>0.00</td>
-      <td>26.0</td>
-      <td>94.0</td>
-      <td>...</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>71.0</td>
-      <td>0.329</td>
-      <td>1.52</td>
-      <td>2.9</td>
-      <td>liriafr01</td>
-      <td>True</td>
-      <td>PIT</td>
-      <td>PIT201604030</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>8.0</td>
-      <td>6.0</td>
-      <td>3.0</td>
-      <td>3.0</td>
-      <td>1.0</td>
-      <td>5.0</td>
-      <td>1.0</td>
-      <td>3.38</td>
-      <td>32.0</td>
-      <td>98.0</td>
-      <td>...</td>
-      <td>5.0</td>
-      <td>0.0</td>
-      <td>62.0</td>
-      <td>0.282</td>
-      <td>0.92</td>
-      <td>1.5</td>
-      <td>stromma01</td>
-      <td>False</td>
-      <td>TOR</td>
-      <td>TBA201604030</td>
-    </tr>
-  </tbody>
-</table>
-<p>5 rows × 26 columns</p>
-</div>
-</div>
-
-</div>
-
 </div>
 </div>
 
@@ -1596,14 +1287,18 @@ window.onload = wrap_img;
     <span class="k">return</span> <span class="n">df</span>
 
 <span class="k">def</span> <span class="nf">get_diff_df</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">is_pitcher</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="c1">#runs for each of the stat dataframes, returns the difference in stats</span>
+
+    <span class="c1">#set up dataframe with time index</span>
     <span class="n">df</span><span class="p">[</span><span class="s1">'date'</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">'game_id'</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"%Y%m</span><span class="si">%d</span><span class="s2">"</span><span class="p">)</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">'date'</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="n">stat_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="s1">'int'</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)]</span>
-    <span class="n">stat_cols</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="s1">'float'</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)])</span>
-
     <span class="n">newindex</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">'date'</span><span class="p">)[</span><span class="s1">'date'</span><span class="p">]</span>\
              <span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">timedelta64</span><span class="p">))</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">newindex</span><span class="p">)</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+
+    <span class="c1"># get stat columns</span>
+    <span class="n">stat_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="s1">'int'</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)]</span>
+    <span class="n">stat_cols</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="s1">'float'</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)])</span>
 
     <span class="c1">#add lags</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">add_rolling</span><span class="p">(</span><span class="s1">'5d'</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">stat_cols</span><span class="p">)</span> <span class="c1"># this game series</span>
@@ -1612,12 +1307,12 @@ window.onload = wrap_img;
     <span class="n">df</span> <span class="o">=</span> <span class="n">add_rolling</span><span class="p">(</span><span class="s1">'180d'</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">stat_cols</span><span class="p">)</span> <span class="c1"># this season</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">add_rolling</span><span class="p">(</span><span class="s1">'730d'</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">stat_cols</span><span class="p">)</span> <span class="c1"># 2 years</span>
 
-    <span class="c1"># reset stat columns to just the lags</span>
+    <span class="c1"># reset stat columns to just the lags (removing the original stats)</span>
     <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">stat_cols</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">stat_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="s1">'int'</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)]</span>
     <span class="n">stat_cols</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="s1">'float'</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)])</span>
 
-    <span class="c1"># shift results</span>
+    <span class="c1"># shift results so that each row is  a pregame stat</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">'date'</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">stat_cols</span><span class="p">:</span>
@@ -1626,7 +1321,7 @@ window.onload = wrap_img;
         <span class="k">else</span><span class="p">:</span>
             <span class="n">df</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">'team'</span><span class="p">)[</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
-    <span class="c1"># get diffs</span>
+    <span class="c1"># calculate differences in pregame stats from home vs. away teams</span>
     <span class="n">away_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">~</span><span class="n">df</span><span class="p">[</span><span class="s1">'is_home_team'</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">away_df</span> <span class="o">=</span> <span class="n">away_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">'game_id'</span><span class="p">)</span>
     <span class="n">away_df</span> <span class="o">=</span> <span class="n">away_df</span><span class="p">[</span><span class="n">stat_cols</span><span class="p">]</span>
@@ -1638,7 +1333,7 @@ window.onload = wrap_img;
     <span class="n">diff_df</span> <span class="o">=</span> <span class="n">home_df</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">away_df</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">diff_df</span> <span class="o">=</span> <span class="n">diff_df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
 
-    <span class="c1"># rename columns</span>
+    <span class="c1"># clean column names</span>
     <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">stat_cols</span><span class="p">:</span>
         <span class="n">diff_df</span><span class="p">[</span><span class="n">name</span> <span class="o">+</span> <span class="s2">"_"</span> <span class="o">+</span> <span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">diff_df</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
         <span class="n">diff_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -2015,7 +1710,7 @@ XGBoost		Accuracy:0.5700	 Brier Loss: 0.2425
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>That's not terrible for a first run. I think this model has some promise. Let's look at the feature importances just to see which features it's using most.</p>
+<p>That's not terrible for a first run. I think this model has some promise. Let's look at the feature importances just to see which features it's using most. It looks like the model likes <a href="https://thebaseballscholar.com/2017/08/14/sabermetrics-101-re24/">RE24</a>, and it likes the longer lags: 180day &amp; 730day.</p>
 
 </div>
 </div>
