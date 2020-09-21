@@ -94,7 +94,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      16 min read
+      17 min read
     
 </span></p>
 
@@ -2103,7 +2103,9 @@ XGBoost		Accuracy:0.5700	 Brier Loss: 0.2425
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>That's not terrible for a first run. I think this model has some promise. Let's look at the feature importances just to see which features it's using most. It looks like the model likes <a href="https://thebaseballscholar.com/2017/08/14/sabermetrics-101-re24/">RE24</a>, and it likes the longer lags: 180day &amp; 730day.</p>
+<p>That's not terrible for a first run - 57% accuracy for our model vs. 60% for the casinos. We're only off by 3% and we still have our secret features and model optimization to do.</p>
+<p>Our calibration is also worse, but again it's not terrible for our first run. I like to think of it in terms of <a href="https://en.wikipedia.org/wiki/Forecast_skill">forecasting skill</a>. Our calibration skill is 2.8% worse than the casino's, as measured by our brier loss function.</p>
+<p>This model has some promise. Let's look at the feature importances just to see which features it's using most. It looks like the model likes <a href="https://thebaseballscholar.com/2017/08/14/sabermetrics-101-re24/">RE24</a>, and it likes the longer lags: 180day &amp; 730day.</p>
 
 </div>
 </div>
