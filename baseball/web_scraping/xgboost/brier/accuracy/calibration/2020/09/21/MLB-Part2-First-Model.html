@@ -94,7 +94,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      14 min read
+      16 min read
     
 </span></p>
 
@@ -156,14 +156,7 @@ window.onload = wrap_img;
 </li>
 <li class="toc-entry toc-h2"><a href="#Prep-Data-for-Modelling">Prep Data for Modelling </a>
 <ul>
-<li class="toc-entry toc-h3"><a href="#Load-data-into-DataFrames">Load data into DataFrames </a>
-<ul>
-<li class="toc-entry toc-h4"><a href="#Game-DF">Game DF </a></li>
-<li class="toc-entry toc-h4"><a href="#Batting-DF">Batting DF </a></li>
-<li class="toc-entry toc-h4"><a href="#Pitching-DF">Pitching DF </a></li>
-<li class="toc-entry toc-h4"><a href="#Pitcher-DF">Pitcher DF </a></li>
-</ul>
-</li>
+<li class="toc-entry toc-h3"><a href="#Load-data-into-DataFrames">Load data into DataFrames </a></li>
 <li class="toc-entry toc-h3"><a href="#Calculate-Differences-in-the-Statistics">Calculate Differences in the Statistics </a></li>
 </ul>
 </li>
@@ -856,9 +849,7 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Game-DF">
-<a class="anchor" href="#Game-DF" aria-hidden="true"><span class="octicon octicon-link"></span></a>Game DF<a class="anchor-link" href="#Game-DF"> </a>
-</h4>
+<p><strong>Game DF</strong></p>
 <p>This one is where we'll eventually put all of our stats</p>
 
 </div>
@@ -971,9 +962,7 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Batting-DF">
-<a class="anchor" href="#Batting-DF" aria-hidden="true"><span class="octicon octicon-link"></span></a>Batting DF<a class="anchor-link" href="#Batting-DF"> </a>
-</h4>
+<p><strong>Batting DF</strong></p>
 <p>Stats about batting, one row per team per game</p>
 
 </div>
@@ -1184,9 +1173,7 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Pitching-DF">
-<a class="anchor" href="#Pitching-DF" aria-hidden="true"><span class="octicon octicon-link"></span></a>Pitching DF<a class="anchor-link" href="#Pitching-DF"> </a>
-</h4>
+<p><strong>Pitching DF</strong></p>
 <p>Team pitching stats, one row per team per game</p>
 
 </div>
@@ -1210,15 +1197,193 @@ window.onload = wrap_img;
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>IP</th>
+      <th>H</th>
+      <th>R</th>
+      <th>ER</th>
+      <th>BB</th>
+      <th>SO</th>
+      <th>HR</th>
+      <th>earned_run_avg</th>
+      <th>batters_faced</th>
+      <th>pitches</th>
+      <th>...</th>
+      <th>inplay_unk</th>
+      <th>game_score</th>
+      <th>inherited_runners</th>
+      <th>inherited_score</th>
+      <th>wpa_def</th>
+      <th>leverage_index_avg</th>
+      <th>re24_def</th>
+      <th>is_home_team</th>
+      <th>team</th>
+      <th>game_id</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>8.0</td>
+      <td>9.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>3.0</td>
+      <td>0.0</td>
+      <td>3.38</td>
+      <td>33.0</td>
+      <td>114.0</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>39.0</td>
+      <td>2.0</td>
+      <td>1.0</td>
+      <td>-0.051</td>
+      <td>0.74</td>
+      <td>0.1</td>
+      <td>False</td>
+      <td>NYM</td>
+      <td>KCA201604030</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>9.0</td>
+      <td>7.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>6.0</td>
+      <td>9.0</td>
+      <td>0.0</td>
+      <td>3.00</td>
+      <td>39.0</td>
+      <td>177.0</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>70.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>0.449</td>
+      <td>1.58</td>
+      <td>1.7</td>
+      <td>True</td>
+      <td>KCR</td>
+      <td>KCA201604030</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>8.0</td>
+      <td>9.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
+      <td>4.50</td>
+      <td>36.0</td>
+      <td>144.0</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>48.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>-0.069</td>
+      <td>0.71</td>
+      <td>-0.1</td>
+      <td>False</td>
+      <td>STL</td>
+      <td>PIT201604030</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>9.0</td>
+      <td>5.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>5.0</td>
+      <td>14.0</td>
+      <td>0.0</td>
+      <td>1.00</td>
+      <td>38.0</td>
+      <td>141.0</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>71.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.431</td>
+      <td>1.27</td>
+      <td>3.4</td>
+      <td>True</td>
+      <td>PIT</td>
+      <td>PIT201604030</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>9.0</td>
+      <td>7.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>1.0</td>
+      <td>7.0</td>
+      <td>1.0</td>
+      <td>3.00</td>
+      <td>36.0</td>
+      <td>118.0</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>62.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>0.366</td>
+      <td>0.98</td>
+      <td>1.3</td>
+      <td>False</td>
+      <td>TOR</td>
+      <td>TBA201604030</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 27 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
     
 
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Pitcher-DF">
-<a class="anchor" href="#Pitcher-DF" aria-hidden="true"><span class="octicon octicon-link"></span></a>Pitcher DF<a class="anchor-link" href="#Pitcher-DF"> </a>
-</h4>
+<p><strong>Pitcher DF</strong></p>
 <p>Individual pitching stats (starting pitchers only), one row per pitcher per game</p>
 
 </div>
@@ -1242,6 +1407,186 @@ window.onload = wrap_img;
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>IP</th>
+      <th>H</th>
+      <th>R</th>
+      <th>ER</th>
+      <th>BB</th>
+      <th>SO</th>
+      <th>HR</th>
+      <th>earned_run_avg</th>
+      <th>batters_faced</th>
+      <th>pitches</th>
+      <th>...</th>
+      <th>inplay_ld</th>
+      <th>inplay_unk</th>
+      <th>game_score</th>
+      <th>wpa_def</th>
+      <th>leverage_index_avg</th>
+      <th>re24_def</th>
+      <th>name</th>
+      <th>is_home_team</th>
+      <th>team</th>
+      <th>game_id</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>5.2</td>
+      <td>8.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>4.76</td>
+      <td>25.0</td>
+      <td>83.0</td>
+      <td>...</td>
+      <td>5.0</td>
+      <td>0.0</td>
+      <td>39.0</td>
+      <td>-0.061</td>
+      <td>0.86</td>
+      <td>-0.4</td>
+      <td>harvema01</td>
+      <td>False</td>
+      <td>NYM</td>
+      <td>KCA201604030</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>6.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>22.0</td>
+      <td>106.0</td>
+      <td>...</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>70.0</td>
+      <td>0.350</td>
+      <td>0.92</td>
+      <td>3.1</td>
+      <td>volqued01</td>
+      <td>True</td>
+      <td>KCR</td>
+      <td>KCA201604030</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>6.0</td>
+      <td>6.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>0.0</td>
+      <td>4.50</td>
+      <td>26.0</td>
+      <td>96.0</td>
+      <td>...</td>
+      <td>6.0</td>
+      <td>0.0</td>
+      <td>48.0</td>
+      <td>-0.069</td>
+      <td>0.90</td>
+      <td>-0.1</td>
+      <td>wainwad01</td>
+      <td>False</td>
+      <td>STL</td>
+      <td>PIT201604030</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>6.0</td>
+      <td>3.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>5.0</td>
+      <td>10.0</td>
+      <td>0.0</td>
+      <td>0.00</td>
+      <td>26.0</td>
+      <td>94.0</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>71.0</td>
+      <td>0.329</td>
+      <td>1.52</td>
+      <td>2.9</td>
+      <td>liriafr01</td>
+      <td>True</td>
+      <td>PIT</td>
+      <td>PIT201604030</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>8.0</td>
+      <td>6.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>1.0</td>
+      <td>5.0</td>
+      <td>1.0</td>
+      <td>3.38</td>
+      <td>32.0</td>
+      <td>98.0</td>
+      <td>...</td>
+      <td>5.0</td>
+      <td>0.0</td>
+      <td>62.0</td>
+      <td>0.282</td>
+      <td>0.92</td>
+      <td>1.5</td>
+      <td>stromma01</td>
+      <td>False</td>
+      <td>TOR</td>
+      <td>TBA201604030</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 26 columns</p>
+</div>
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -1274,9 +1619,7 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># The code is a little dense. Sorry if it's hard to follow.</span>
-
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class=" highlight hl-ipython2"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="k">def</span> <span class="nf">add_rolling</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">stat_columns</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">stat_columns</span><span class="p">:</span>
@@ -1355,7 +1698,8 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># then merges those differences back into the main df</span>
+<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># this cell calculates the differences for each datafraame of stats</span>
+<span class="c1"># then merges those differences back into the main df</span>
 
 <span class="n">df</span> <span class="o">=</span> <span class="n">game_df</span>
 
