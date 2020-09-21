@@ -705,6 +705,14 @@ window.onload = wrap_img;
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's save our work, so we don't have to do that download again.</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -744,6 +752,7 @@ window.onload = wrap_img;
 <li>
 <strong>pitcher_df</strong>: This is the same as pitching_df, but has one row per player. We'll derive our starting pitcher stats from here.</li>
 </ul>
+<p>First, let's load our saved work.</p>
 
 </div>
 </div>
@@ -1607,7 +1616,8 @@ window.onload = wrap_img;
             grouped by team (or pitcher name in the case of pitchers)
     then shift the data so each row contains pre-game statistics
     then take the difference of the opposing team</code></pre>
-<p>That result is put into the game_df with a name like "5day_R_Avg", or "45Day_IP_StDev". The other dfs are done at that point</p>
+<p>That result is put into the game_df with a name like "5day_R_Avg", or "45Day_IP_StDev". The other dfs are done at that point.</p>
+<p>Below are the routines to help execute the above algorithm.</p>
 
 </div>
 </div>
@@ -1691,6 +1701,14 @@ window.onload = wrap_img;
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Below calculates the differences for each datafraame of stats, then merges those differences back into the main df.</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -1698,10 +1716,7 @@ window.onload = wrap_img;
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># this cell calculates the differences for each datafraame of stats</span>
-<span class="c1"># then merges those differences back into the main df</span>
-
-<span class="n">df</span> <span class="o">=</span> <span class="n">game_df</span>
+<div class=" highlight hl-ipython2"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">game_df</span>
 
 <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">get_diff_df</span><span class="p">(</span><span class="n">batting_df</span><span class="p">,</span> <span class="s1">'batting'</span><span class="p">),</span>
                <span class="n">on</span> <span class="o">=</span> <span class="s1">'game_id'</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">'left'</span><span class="p">)</span>
@@ -1748,6 +1763,14 @@ window.onload = wrap_img;
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Below we add some datetime features, as i generally do with time-series data like this.</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -1769,6 +1792,14 @@ window.onload = wrap_img;
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Save our work</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -1794,6 +1825,7 @@ window.onload = wrap_img;
 <a class="anchor" href="#Train-the-Model" aria-hidden="true"><span class="octicon octicon-link"></span></a>Train the Model<a class="anchor-link" href="#Train-the-Model"> </a>
 </h2>
 <p>Finally, we get to train the model! This is just going to be a crude first run to make sure everything is working properly. We'll add the cleverest bits in the next blog post.</p>
+<p>First, load our saved saved work</p>
 
 </div>
 </div>
@@ -1817,6 +1849,14 @@ window.onload = wrap_img;
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Target encoding for remaining string features</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -1836,6 +1876,14 @@ window.onload = wrap_img;
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Create our test, train and validate data sets</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -1846,23 +1894,8 @@ window.onload = wrap_img;
 <div class=" highlight hl-ipython2"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">'date'</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">X</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">'home_team_win'</span><span class="p">,</span> <span class="s1">'game_id'</span><span class="p">])</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">home_team_win</span>
-</pre></div>
 
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="n">X_train</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:</span><span class="o">-</span><span class="mi">1000</span><span class="p">]</span>
+<span class="n">X_train</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:</span><span class="o">-</span><span class="mi">1000</span><span class="p">]</span>
 <span class="n">y_train</span> <span class="o">=</span> <span class="n">y</span><span class="p">[:</span><span class="o">-</span><span class="mi">1000</span><span class="p">]</span>
 <span class="n">X_valid</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="o">-</span><span class="mi">1000</span><span class="p">:</span><span class="o">-</span><span class="mi">500</span><span class="p">]</span>
 <span class="n">y_valid</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1000</span><span class="p">:</span><span class="o">-</span><span class="mi">500</span><span class="p">]</span>
@@ -1877,6 +1910,14 @@ window.onload = wrap_img;
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Here's the training bit</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -1963,6 +2004,14 @@ Stopping. Best iteration:
 </div>
     
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>And our results...</p>
+
+</div>
+</div>
+</div>
     
     
 <div class="cell border-box-sizing code_cell rendered">
