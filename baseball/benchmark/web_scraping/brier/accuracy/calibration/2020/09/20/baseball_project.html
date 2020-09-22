@@ -275,11 +275,11 @@ window.onload = wrap_img;
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>2020-09-21 13:43:11.235271 2019-05-02 500
-2020-09-21 13:43:48.030736 2019-06-08 1000
-2020-09-21 13:44:16.474179 2019-07-18 1500
-2020-09-21 13:44:45.831305 2019-08-24 2000
-2020-09-21 13:45:15.965332 2019-10-03 2500
+<pre>2020-09-22 08:22:10.026747 2019-05-02 500
+2020-09-22 08:22:39.216218 2019-06-08 1000
+2020-09-22 08:23:08.537133 2019-07-18 1500
+2020-09-22 08:23:37.863950 2019-08-24 2000
+2020-09-22 08:24:06.836592 2019-10-03 2500
 Done! Games downloaded: 2533
 </pre>
 </div>
@@ -506,11 +506,30 @@ Done! Games downloaded: 2533
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>The graph above tells us several things about the calibration of the casino's predictions. The reliability curve clearly shows that the casino is highly calibrated. Interestingly, it looks like the blue line is shifted down slightly from the "perfectly calibrated" line. It would be a better fit if it was 0.05 higher. This may account for the house advantage.</p>
 <p>The histogram below shows what portion of the games fall into each bin. We see a slight predicted advantage to the home team, with more than 50% of the observations above the 50% mark. Otherwise it looks pretty normally distributed.</p>
-<p>Above, I said the reliability curve looks highly calibrated. If we are to judge our own efforts against the sportsbook, we can't just be eyeballing this graph all the time. A metric would be nice. One metric that is suited for calibration measurement is the <a href="https://en.wikipedia.org/wiki/Brier_score">Brier Score</a>, which I'll be using to measure the model effectiveness going forward. Getting a model that scores less than 0.2358 is the target.</p>
+<p>Above, I said the reliability curve looks highly calibrated. If we are to judge our own efforts against the sportsbook, we can't just be eyeballing this graph all the time. A metric would be nice. One metric that is suited for calibration measurement is the <a href="https://en.wikipedia.org/wiki/Brier_score">Brier Score</a>, which I'll be using to measure the model effectiveness going forward. <strong>Getting a model that scores less than 0.2358 is the target for our efforts.</strong></p>
+<p>Before we go, we should save the files for our baseline...</p>
 
 </div>
 </div>
 </div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="kn">import</span> <span class="nn">pickle</span>
+<span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">((</span><span class="n">outcomes</span><span class="p">,</span><span class="n">predictions</span><span class="p">,</span> <span class="n">probabilities</span><span class="p">),</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;baseline.pkl&#39;</span><span class="p">,</span><span class="s1">&#39;wb&#39;</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="Next-Up">Next Up<a class="anchor-link" href="#Next-Up"> </a></h1><p>Next, we'll start building out our historic data and training the model using XGBoost and LightGBM.</p>
