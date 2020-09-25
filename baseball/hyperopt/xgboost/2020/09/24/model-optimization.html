@@ -8,8 +8,8 @@
 <meta name="generator" content="Jekyll v4.1.1" />
 <meta property="og:title" content="MLB Model Optimization" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="Part 4 - Improving our model with hyperparameter optimization &amp; more data" />
-<meta property="og:description" content="Part 4 - Improving our model with hyperparameter optimization &amp; more data" />
+<meta name="description" content="Part 4 - Solidly outperforming the casinos after hyperparameter optimization &amp; more data" />
+<meta property="og:description" content="Part 4 - Solidly outperforming the casinos after hyperparameter optimization &amp; more data" />
 <link rel="canonical" href="https://rdpharr.github.io/project_notes/baseball/hyperopt/xgboost/2020/09/24/model-optimization.html" />
 <meta property="og:url" content="https://rdpharr.github.io/project_notes/baseball/hyperopt/xgboost/2020/09/24/model-optimization.html" />
 <meta property="og:site_name" content="rdpharr’s projects" />
@@ -17,7 +17,7 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2020-09-24T00:00:00-05:00" />
 <script type="application/ld+json">
-{"url":"https://rdpharr.github.io/project_notes/baseball/hyperopt/xgboost/2020/09/24/model-optimization.html","@type":"BlogPosting","headline":"MLB Model Optimization","dateModified":"2020-09-24T00:00:00-05:00","datePublished":"2020-09-24T00:00:00-05:00","image":"https://rdpharr.github.io/project_notes/images/chart-preview.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://rdpharr.github.io/project_notes/baseball/hyperopt/xgboost/2020/09/24/model-optimization.html"},"description":"Part 4 - Improving our model with hyperparameter optimization &amp; more data","@context":"https://schema.org"}</script>
+{"url":"https://rdpharr.github.io/project_notes/baseball/hyperopt/xgboost/2020/09/24/model-optimization.html","@type":"BlogPosting","headline":"MLB Model Optimization","dateModified":"2020-09-24T00:00:00-05:00","datePublished":"2020-09-24T00:00:00-05:00","image":"https://rdpharr.github.io/project_notes/images/chart-preview.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://rdpharr.github.io/project_notes/baseball/hyperopt/xgboost/2020/09/24/model-optimization.html"},"description":"Part 4 - Solidly outperforming the casinos after hyperparameter optimization &amp; more data","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/project_notes/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://rdpharr.github.io/project_notes/feed.xml" title="rdpharr's projects" /><link rel="shortcut icon" type="image/x-icon" href="/project_notes/images/favicon.ico"><link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
 <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css">
@@ -88,7 +88,7 @@ window.onload = wrap_img;
         <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">MLB Model Optimization</h1><p class="page-description">Part 4 - Improving our model with hyperparameter optimization & more data</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-09-24T00:00:00-05:00" itemprop="datePublished">
+    <h1 class="post-title p-name" itemprop="name headline">MLB Model Optimization</h1><p class="page-description">Part 4 - Solidly outperforming the casinos after hyperparameter optimization & more data</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-09-24T00:00:00-05:00" itemprop="datePublished">
         Sep 24, 2020
       </time>
        • <span class="read-time" title="Estimated read time">
@@ -149,7 +149,7 @@ window.onload = wrap_img;
         
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>In Part 3, our model was already performing better than the casino's oddsmakers, but it was only 0.6% better in accuracy and calibration was at parity. In this notebook, we'll get those numbers higher by some optimization of the hyperparameters and getting more data.</p>
+<p>In Part 3, our model was already performing better than the casino's oddsmakers, but it was only 0.6% better in accuracy and calibration was at parity. In this notebook, we'll get those numbers higher by doing some optimization of the hyperparameters and getting more data.</p>
 <h2 id="Get-More-Data">Get More Data<a class="anchor-link" href="#Get-More-Data"> </a></h2><p>This is key to solving the overfitting problem we saw in Part 3. XGBoost wanting a low <code>max_depth</code> feels like a big deal to me, so let's solve it. I think of overfitting as a problem of either too many features or not enough data. I really love all the fancy and clever features we've made, so let's get more data.</p>
 <p>Start by going back to the blog post for Part 2 and run the whole thing again, except when you download from baseball-reference.com, start in 2013 instead fo 2016. The code to change is right under the header "Create List of Games to Download". It might take a bit to download all that data.</p>
 <p>... I'll wait ...</p>
@@ -724,7 +724,8 @@ XGBoost		Accuracy:0.6060	 Brier Loss: 0.2383
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>I'm pretty happy with this. We've got a model that &gt;2% better than the casino's and just as well calibrated. The last thing I want to check is how closely our predictions are correlated to the casino's. The lower the correlation, the more bets we'll get to place.</p>
+<p>I get pretty obsessive about hyperparameter adjustments. It's like a little game that I can't stop playing. I am just going to stop. This is good.</p>
+<p>We've got a model that &gt;2% better than the casino's and just as well calibrated. The last thing I want to check is how closely our predictions are correlated to the casino's. The lower the correlation, the more bets we'll get to place.</p>
 
 </div>
 </div>
