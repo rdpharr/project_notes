@@ -1,0 +1,1815 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>MLB Predictions and Betting Strategy | rdpharr’s projects</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="MLB Predictions and Betting Strategy" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Part 5 - Making our guesses, assessing confidence, and deciding how much to bet" />
+<meta property="og:description" content="Part 5 - Making our guesses, assessing confidence, and deciding how much to bet" />
+<link rel="canonical" href="https://rdpharr.github.io/project_notes/baseball/webscraping/kelly%20criterion/xgboost/2020/09/26/predictions-and-betting-strategy.html" />
+<meta property="og:url" content="https://rdpharr.github.io/project_notes/baseball/webscraping/kelly%20criterion/xgboost/2020/09/26/predictions-and-betting-strategy.html" />
+<meta property="og:site_name" content="rdpharr’s projects" />
+<meta property="og:image" content="https://rdpharr.github.io/project_notes/images/chart-preview.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-09-26T00:00:00-05:00" />
+<script type="application/ld+json">
+{"url":"https://rdpharr.github.io/project_notes/baseball/webscraping/kelly%20criterion/xgboost/2020/09/26/predictions-and-betting-strategy.html","@type":"BlogPosting","headline":"MLB Predictions and Betting Strategy","dateModified":"2020-09-26T00:00:00-05:00","datePublished":"2020-09-26T00:00:00-05:00","image":"https://rdpharr.github.io/project_notes/images/chart-preview.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://rdpharr.github.io/project_notes/baseball/webscraping/kelly%20criterion/xgboost/2020/09/26/predictions-and-betting-strategy.html"},"description":"Part 5 - Making our guesses, assessing confidence, and deciding how much to bet","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/project_notes/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://rdpharr.github.io/project_notes/feed.xml" title="rdpharr's projects" /><!-- the google_analytics_id gets auto inserted from the config file -->
+
+
+
+<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create','UA-179035902-1','auto');ga('require','displayfeatures');ga('send','pageview');</script>
+
+<link rel="shortcut icon" type="image/x-icon" href="/project_notes/images/favicon.ico"><link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
+<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement( document.body, {
+        delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "[%", right: "%]", display: true},
+            {left: "$", right: "$", display: false}
+        ]}
+        );
+    });
+    </script>
+
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/project_notes/">rdpharr&#39;s projects</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/project_notes/about/">About Me</a><a class="page-link" href="/project_notes/search/">Search</a><a class="page-link" href="/project_notes/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">MLB Predictions and Betting Strategy</h1><p class="page-description">Part 5 - Making our guesses, assessing confidence, and deciding how much to bet</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-09-26T00:00:00-05:00" itemprop="datePublished">
+        Sep 26, 2020
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      17 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/project_notes/categories/#baseball">baseball</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/project_notes/categories/#webscraping">webscraping</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/project_notes/categories/#kelly criterion">kelly criterion</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/project_notes/categories/#xgboost">xgboost</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-wrap flex-justify-end">
+          <div class="px-2">
+
+    <a href="https://github.com/rdpharr/project_notes/tree/master/_notebooks/2020-09-26-predictions and betting strategy.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/project_notes/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://mybinder.org/v2/gh/rdpharr/project_notes/master?filepath=_notebooks%2F2020-09-26-predictions+and+betting+strategy.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/project_notes/assets/badges/binder.svg" alt="Open In Binder"/>
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/rdpharr/project_notes/blob/master/_notebooks/2020-09-26-predictions and betting strategy.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/project_notes/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2020-09-26-predictions and betting strategy.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>It's finally time to put all of this work into practice. This is going to be another long notebook, though. It's a lot of work.
+<div class="flash flash-error">
+    <svg class="octicon octicon-alert" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M8.22 1.754a.25.25 0 00-.44 0L1.698 13.132a.25.25 0 00.22.368h12.164a.25.25 0 00.22-.368L8.22 1.754zm-1.763-.707c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0114.082 15H1.918a1.75 1.75 0 01-1.543-2.575L6.457 1.047zM9 11a1 1 0 11-2 0 1 1 0 012 0zm-.25-5.25a.75.75 0 00-1.5 0v2.5a.75.75 0 001.5 0v-2.5z"></path></svg>
+    <strong>Warning: </strong>Do this at your own risk. If you lose money, it&#8217;s not my problem. Gamble responsibly. If you have think you may have a problem controlling yourself, <a href="http://www.gamblersanonymous.org/ga/">get some help</a>.
+</div><div class="flash flash-warn">
+    <svg class="octicon octicon-zap octicon octicon-zap octicon octicon-zap octicon octicon-zap octicon octicon-zap octicon octicon-zap" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M10.561 1.5a.016.016 0 00-.01.004L3.286 8.571A.25.25 0 003.462 9H6.75a.75.75 0 01.694 1.034l-1.713 4.188 6.982-6.793A.25.25 0 0012.538 7H9.25a.75.75 0 01-.683-1.06l2.008-4.418.003-.006a.02.02 0 00-.004-.009.02.02 0 00-.006-.006L10.56 1.5zM9.504.43a1.516 1.516 0 012.437 1.713L10.415 5.5h2.123c1.57 0 2.346 1.909 1.22 3.004l-7.34 7.142a1.25 1.25 0 01-.871.354h-.302a1.25 1.25 0 01-1.157-1.723L5.633 10.5H3.462c-1.57 0-2.346-1.909-1.22-3.004L9.503.429z"></path></svg>
+    <strong>Important: </strong>But if you win, you owe me 10%.
+</div>
+To make bet recommendations, this notebook needs to do all this:</p>
+<ul>
+<li>Download games and odds that have completed</li>
+<li>Download today's games and their odds</li>
+<li>Calculate the stats for today's games</li>
+<li>Generate predictions using our saved model</li>
+<li>Calculate bet sizes based on the moneyline odds and our predictions</li>
+</ul>
+<p>Luckily a bunch of the code for this was written in previous posts, we just need to get it into this notebook.</p>
+<h2 id="Update-Historic-Data">Update Historic Data<a class="anchor-link" href="#Update-Historic-Data"> </a></h2><p>First, we'll update the data from our web scraping. I've hidden all the code you saw in parts 2 and 3. Click the button to unhide it.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<details class="description">
+      <summary class="btn btn-sm" data-open="Hide Code" data-close="Show Code"></summary>
+        <p><div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="c1"># these are functions related to parsing the baseball reference page</span>
+
+<span class="k">def</span> <span class="nf">get_game_summary</span><span class="p">(</span><span class="n">soup</span><span class="p">,</span> <span class="n">game_id</span><span class="p">):</span>
+    <span class="n">game</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;game_id&#39;</span><span class="p">:</span> <span class="n">game_id</span><span class="p">}</span>
+    <span class="n">scorebox</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span><span class="s1">&#39;scorebox&#39;</span><span class="p">})</span>
+    <span class="n">teams</span> <span class="o">=</span> <span class="n">scorebox</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,{</span><span class="s1">&#39;itemprop&#39;</span><span class="p">:</span><span class="s1">&#39;name&#39;</span><span class="p">})</span>
+    <span class="n">game</span><span class="p">[</span><span class="s1">&#39;away_team_abbr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">teams</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;href&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">game</span><span class="p">[</span><span class="s1">&#39;home_team_abbr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">teams</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;href&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">meta</span> <span class="o">=</span> <span class="n">scorebox</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span><span class="s1">&#39;scorebox_meta&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">)</span>
+    <span class="n">game</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">game</span><span class="p">[</span><span class="s1">&#39;start_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">[</span><span class="mi">12</span><span class="p">:</span><span class="o">-</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">game</span>
+
+<span class="k">def</span> <span class="nf">get_table_summary</span><span class="p">(</span><span class="n">soup</span><span class="p">,</span> <span class="n">table_no</span><span class="p">):</span>
+    <span class="n">stats_tables</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;table&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span><span class="s1">&#39;stats_table&#39;</span><span class="p">})</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">stats_tables</span><span class="p">[</span><span class="n">table_no</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;tfoot&#39;</span><span class="p">)</span>
+    <span class="n">summary</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;data-stat&#39;</span><span class="p">]:</span><span class="n">x</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;td&#39;</span><span class="p">)}</span>
+    <span class="k">return</span> <span class="n">summary</span>
+
+<span class="k">def</span> <span class="nf">get_pitcher_data</span><span class="p">(</span><span class="n">soup</span><span class="p">,</span> <span class="n">table_no</span><span class="p">):</span>
+    <span class="n">stats_tables</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;table&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span><span class="s1">&#39;stats_table&#39;</span><span class="p">})</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">stats_tables</span><span class="p">[</span><span class="n">table_no</span><span class="p">]</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;tr&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># not the header and footer rows</span>
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+        <span class="n">summary</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;data-stat&#39;</span><span class="p">]:</span><span class="n">x</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;td&#39;</span><span class="p">)}</span>
+        <span class="n">summary</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;th&#39;</span><span class="p">,{</span><span class="s1">&#39;data-stat&#39;</span><span class="p">:</span><span class="s1">&#39;player&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)[</span><span class="s1">&#39;href&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data</span>
+
+<span class="k">def</span> <span class="nf">process_link</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="n">game_id</span> <span class="o">=</span> <span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">6</span><span class="p">]</span>
+
+    <span class="c1"># strange preprocessing routine</span>
+    <span class="n">uncommented_html</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s1">&#39;&lt;!--     &lt;div&#39;</span> <span class="ow">in</span> <span class="n">h</span><span class="p">:</span> <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">h</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;&lt;!--&#39;</span><span class="p">:</span> <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">h</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;--&gt;&#39;</span><span class="p">:</span> <span class="k">continue</span>
+        <span class="n">uncommented_html</span> <span class="o">+=</span> <span class="n">h</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+    <span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">uncommented_html</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;game&#39;</span><span class="p">:</span> <span class="n">get_game_summary</span><span class="p">(</span><span class="n">soup</span><span class="p">,</span> <span class="n">game_id</span><span class="p">),</span>
+        <span class="s1">&#39;away_batting&#39;</span><span class="p">:</span> <span class="n">get_table_summary</span><span class="p">(</span><span class="n">soup</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="s1">&#39;home_batting&#39;</span><span class="p">:</span><span class="n">get_table_summary</span><span class="p">(</span><span class="n">soup</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+        <span class="s1">&#39;away_pitching&#39;</span><span class="p">:</span><span class="n">get_table_summary</span><span class="p">(</span><span class="n">soup</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+        <span class="s1">&#39;home_pitching&#39;</span><span class="p">:</span><span class="n">get_table_summary</span><span class="p">(</span><span class="n">soup</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+        <span class="s1">&#39;away_pitchers&#39;</span><span class="p">:</span> <span class="n">get_pitcher_data</span><span class="p">(</span><span class="n">soup</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+        <span class="s1">&#39;home_pitchers&#39;</span><span class="p">:</span> <span class="n">get_pitcher_data</span><span class="p">(</span><span class="n">soup</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">data</span>
+
+<span class="k">def</span> <span class="nf">get_covers_data</span><span class="p">(</span><span class="n">date_string</span><span class="p">):</span>
+    <span class="n">odds_data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># get the web page with game data on it</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;https://www.covers.com/Sports/MLB/Matchups?selectedDate=</span><span class="si">{</span><span class="n">date_string</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+
+    <span class="c1"># parse the games</span>
+    <span class="n">scraped_games</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">,{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span><span class="s1">&#39;cmg_matchup_game_box&#39;</span><span class="p">})</span>
+    <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">scraped_games</span><span class="p">:</span>
+        <span class="n">game</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">game</span><span class="p">[</span><span class="s1">&#39;home_moneyline&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;data-game-odd&#39;</span><span class="p">]</span>
+        <span class="n">game</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;data-game-date&#39;</span><span class="p">]</span>
+        <span class="n">game</span><span class="p">[</span><span class="s1">&#39;away_team_abbr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;data-away-team-shortname-search&#39;</span><span class="p">]</span>
+        <span class="n">game</span><span class="p">[</span><span class="s1">&#39;home_team_abbr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;data-home-team-shortname-search&#39;</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">game</span><span class="p">[</span><span class="s1">&#39;home_score&#39;</span><span class="p">]</span> <span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">,{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span><span class="s1">&#39;cmg_matchup_list_score_home&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">game</span><span class="p">[</span><span class="s1">&#39;away_score&#39;</span><span class="p">]</span> <span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">,{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span><span class="s1">&#39;cmg_matchup_list_score_away&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">game</span><span class="p">[</span><span class="s1">&#39;home_score&#39;</span><span class="p">]</span> <span class="o">=</span><span class="s1">&#39;&#39;</span>
+            <span class="n">game</span><span class="p">[</span><span class="s1">&#39;away_score&#39;</span><span class="p">]</span> <span class="o">=</span><span class="s1">&#39;&#39;</span>
+
+        <span class="n">odds_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">game</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">odds_data</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+</p>
+    </details>
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>First we'll load our saved data</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="kn">import</span> <span class="nn">pickle</span>
+<span class="n">game_data</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;game_data.pkl&#39;</span><span class="p">,</span><span class="s1">&#39;rb&#39;</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's get the scores for the games that aren't in our database yet.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="n">current_year</span><span class="o">=</span><span class="mi">2020</span>
+
+<span class="c1"># find all games for the year</span>
+<span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;https://www.baseball-reference.com/leagues/MLB/</span><span class="si">{</span><span class="n">current_year</span><span class="si">}</span><span class="s2">-schedule.shtml&quot;</span>
+<span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+<span class="n">soup</span><span class="o">=</span><span class="n">bs</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+<span class="n">game_soups</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Boxscore&#39;</span><span class="p">)</span>
+<span class="n">game_links</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">game_soups</span><span class="p">]</span> <span class="c1"># for instance &#39;/boxes/LAN/LAN202007230.shtml&#39;</span>
+
+<span class="c1"># compare against downloaded games</span>
+<span class="n">downloaded_games</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;game&#39;</span><span class="p">][</span><span class="s1">&#39;game_id&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">game_data</span><span class="p">]</span>
+<span class="n">new_game_links</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">game_links</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">18</span><span class="p">:</span><span class="o">-</span><span class="mi">6</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">downloaded_games</span><span class="p">]</span>
+
+<span class="c1"># get the new games</span>
+<span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">new_game_links</span><span class="p">:</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;https://www.baseball-reference.com&#39;</span> <span class="o">+</span> <span class="n">link</span>
+    <span class="n">game_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">process_link</span><span class="p">(</span><span class="n">url</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;New games downloaded: &quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_game_links</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>New games downloaded:  46
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Append-Today's-Games">Append Today's Games<a class="anchor-link" href="#Append-Today's-Games"> </a></h2><p>Now we'll append today's games to this data</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
+
+<span class="n">today_games</span><span class="o">=</span><span class="p">[]</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;https://www.baseball-reference.com/previews/&#39;</span>
+<span class="n">page</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+<span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">page</span><span class="p">)</span>
+<span class="n">summaries</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span><span class="s1">&#39;game_summary&#39;</span><span class="p">})</span>
+<span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">summaries</span><span class="p">:</span>
+    <span class="n">game</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;game&#39;</span><span class="p">:{</span>
+            <span class="s1">&#39;game_id&#39;</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Preview&#39;</span><span class="p">)[</span><span class="s1">&#39;href&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">18</span><span class="p">:</span><span class="o">-</span><span class="mi">6</span><span class="p">],</span>
+            <span class="s1">&#39;is_test&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%A, %B </span><span class="si">%d</span><span class="s1">, %Y&#39;</span><span class="p">)</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;home_batting&#39;</span><span class="p">:{</span><span class="s1">&#39;R&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">},</span>
+        <span class="s1">&#39;away_batting&#39;</span><span class="p">:{</span><span class="s1">&#39;R&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">},</span>
+        <span class="s1">&#39;home_pitching&#39;</span><span class="p">:{</span><span class="s1">&#39;R&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">},</span>
+        <span class="s1">&#39;away_pitching&#39;</span><span class="p">:{</span><span class="s1">&#39;R&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">},</span>
+        <span class="s1">&#39;home_pitchers&#39;</span><span class="p">:[{</span><span class="s1">&#39;R&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">}],</span>
+        <span class="s1">&#39;away_pitchers&#39;</span><span class="p">:[{</span><span class="s1">&#39;R&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">}]</span>
+    <span class="p">}</span>
+    <span class="n">cells</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;table&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;td&#39;</span><span class="p">)</span>
+
+    <span class="c1"># skip postponed games</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Preview&quot;</span><span class="p">):</span> <span class="k">continue</span>
+
+    <span class="c1"># skip game 2 in double header - links look like this for 2nd games: &quot;/previews/2020/PHI202008051.shtml&quot;</span>
+    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Preview&quot;</span><span class="p">)[</span><span class="s1">&#39;href&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">7</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;2&#39;</span><span class="p">:</span> <span class="k">continue</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">team_links</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">game</span><span class="p">[</span><span class="s1">&#39;game&#39;</span><span class="p">][</span><span class="s1">&#39;away_team_abbr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">team_links</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;href&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">game</span><span class="p">[</span><span class="s1">&#39;game&#39;</span><span class="p">][</span><span class="s1">&#39;home_team_abbr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">team_links</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="s1">&#39;href&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="c1">#just all star games trigger this, I think</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">team_links</span><span class="p">)</span>
+        <span class="k">continue</span>
+
+    <span class="c1"># get time</span>
+    <span class="n">game</span><span class="p">[</span><span class="s1">&#39;game&#39;</span><span class="p">][</span><span class="s1">&#39;start_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;table&#39;</span><span class="p">,{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span><span class="s1">&#39;teams&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;tbody&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;tr&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;td&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="c1"># get pitchers</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">cells</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;table&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;td&#39;</span><span class="p">)</span>
+        <span class="n">game</span><span class="p">[</span><span class="s1">&#39;away_pitchers&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cells</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)[</span><span class="s1">&#39;href&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">game</span><span class="p">[</span><span class="s1">&#39;home_pitchers&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cells</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)[</span><span class="s1">&#39;href&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="c1"># no pitcher</span>
+        <span class="n">game</span><span class="p">[</span><span class="s1">&#39;away_pitchers&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">game</span><span class="p">[</span><span class="s1">&#39;home_pitchers&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">today_games</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">game</span><span class="p">)</span>
+<span class="n">game_data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">today_games</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">today_games</span><span class="p">),</span> <span class="s2">&quot;Games today&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">today_games</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;game&#39;</span><span class="p">][</span><span class="s1">&#39;game_id&#39;</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;game&#39;</span><span class="p">][</span><span class="s1">&#39;start_time&#39;</span><span class="p">],</span>
+                            <span class="n">x</span><span class="p">[</span><span class="s1">&#39;game&#39;</span><span class="p">][</span><span class="s1">&#39;away_team_abbr&#39;</span><span class="p">],</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;away_pitchers&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">],</span>
+                            <span class="n">x</span><span class="p">[</span><span class="s1">&#39;game&#39;</span><span class="p">][</span><span class="s1">&#39;home_team_abbr&#39;</span><span class="p">],</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;home_pitchers&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>15 Games today
+NYA202009260 1:05PM MIA rogertr01 NYY garcide01
+WAS202009261 3:05PM NYM degroja01 WSN scherma01
+OAK202009261 4:10PM SEA sheffju01 OAK minormi01
+TOR202009260 6:37PM BAL meansjo01 TOR zeuchtj01
+KCA202009260 7:05PM DET boydma01 KCR hernaca04
+TEX202009260 7:05PM HOU  TEX 
+SLN202009260 7:07PM MIL woodrbr01 STL wainwad01
+TBA202009260 7:07PM PHI wheelza01 TBR curtijo02
+ATL202009260 7:10PM BOS houckta01 ATL 
+CHA202009260 7:10PM CHC lestejo01 CHW dunnida01
+CLE202009260 7:10PM PIT musgrjo01 CLE civalaa01
+MIN202009260 7:10PM CIN castilu02 MIN pinedmi01
+ARI202009260 8:10PM COL marquge01 ARI weavelu01
+LAN202009260 9:10PM LAA bundydy01 LAD gonsoto01
+SFN202009260 9:15PM SDP davieza02 SFG cuetojo01
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Generate-Stats-and-Features-Using-Code-from-Part-2-and-Part-3-of-this-Series">Generate Stats and Features Using Code from Part 2 and Part 3 of this Series<a class="anchor-link" href="#Generate-Stats-and-Features-Using-Code-from-Part-2-and-Part-3-of-this-Series"> </a></h1><p>Now we'll create our dataframe in the same way we did in Part 2 of this series. Since the above data is just appended to the end of the db, the stats for our test data will get filled in during the <code>shift(1)</code> statements that build the stats.</p>
+<p>Again I hid the code because it's a lot and you've already seen it.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<details class="description">
+      <summary class="btn btn-sm" data-open="Hide Code" data-close="Show Code"></summary>
+        <p><div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="n">games</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">batting</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">pitching</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">pitchers</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">game_data</span><span class="p">:</span>
+    <span class="n">game_summary</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;game&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s1">&#39;is_test&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">game_summary</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span> <span class="n">game_summary</span><span class="p">[</span><span class="s1">&#39;is_test&#39;</span><span class="p">]</span><span class="o">=</span><span class="kc">False</span>
+    <span class="c1"># fix date</span>
+    <span class="n">game_summary</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">game_summary</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">game_summary</span><span class="p">[</span><span class="s1">&#39;start_time&#39;</span><span class="p">]</span>
+    <span class="k">del</span> <span class="n">game_summary</span><span class="p">[</span><span class="s1">&#39;start_time&#39;</span><span class="p">]</span>
+
+    <span class="c1"># get starting pitchers</span>
+    <span class="n">game_summary</span><span class="p">[</span><span class="s1">&#39;home_pitcher&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;home_pitchers&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+    <span class="n">game_summary</span><span class="p">[</span><span class="s1">&#39;away_pitcher&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;away_pitchers&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+
+    <span class="c1"># this is the field we&#39;ll train our model to predict</span>
+    <span class="n">game_summary</span><span class="p">[</span><span class="s1">&#39;home_team_win&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;home_batting&#39;</span><span class="p">][</span><span class="s1">&#39;R&#39;</span><span class="p">])</span><span class="o">&gt;</span><span class="nb">int</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;away_batting&#39;</span><span class="p">][</span><span class="s1">&#39;R&#39;</span><span class="p">])</span>
+    <span class="n">games</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">game_summary</span><span class="p">)</span>
+
+    <span class="c1"># add all stats to appropriate lists</span>
+    <span class="n">target_pairs</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;away_batting&#39;</span><span class="p">,</span> <span class="n">batting</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;home_batting&#39;</span><span class="p">,</span> <span class="n">batting</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;away_pitching&#39;</span><span class="p">,</span> <span class="n">pitching</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;home_pitching&#39;</span><span class="p">,</span> <span class="n">pitching</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;away_pitchers&#39;</span><span class="p">,</span> <span class="n">pitchers</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;home_pitchers&#39;</span><span class="p">,</span> <span class="n">pitchers</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">target_pairs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span> <span class="c1"># pitchers</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">g</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="s1">&#39;home&#39;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+                    <span class="n">x</span><span class="p">[</span><span class="s1">&#39;is_home_team&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">x</span><span class="p">[</span><span class="s1">&#39;team&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;game&#39;</span><span class="p">][</span><span class="s1">&#39;home_team_abbr&#39;</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">x</span><span class="p">[</span><span class="s1">&#39;is_home_team&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="n">x</span><span class="p">[</span><span class="s1">&#39;team&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;game&#39;</span><span class="p">][</span><span class="s1">&#39;away_team_abbr&#39;</span><span class="p">]</span>
+                <span class="n">x</span><span class="p">[</span><span class="s1">&#39;game_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;game&#39;</span><span class="p">][</span><span class="s1">&#39;game_id&#39;</span><span class="p">]</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span> <span class="c1">#batting, pitching</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s1">&#39;home&#39;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+                <span class="n">x</span><span class="p">[</span><span class="s1">&#39;is_home_team&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">x</span><span class="p">[</span><span class="s1">&#39;team&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;game&#39;</span><span class="p">][</span><span class="s1">&#39;home_team_abbr&#39;</span><span class="p">]</span>
+                <span class="n">x</span><span class="p">[</span><span class="s1">&#39;spread&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;R&#39;</span><span class="p">])</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">,</span><span class="s1">&#39;away&#39;</span><span class="p">)][</span><span class="s1">&#39;R&#39;</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">x</span><span class="p">[</span><span class="s1">&#39;is_home_team&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">x</span><span class="p">[</span><span class="s1">&#39;team&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;game&#39;</span><span class="p">][</span><span class="s1">&#39;away_team_abbr&#39;</span><span class="p">]</span>
+                <span class="n">x</span><span class="p">[</span><span class="s1">&#39;spread&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;R&#39;</span><span class="p">])</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;away&#39;</span><span class="p">,</span><span class="s1">&#39;home&#39;</span><span class="p">)][</span><span class="s1">&#39;R&#39;</span><span class="p">])</span>
+            <span class="n">x</span><span class="p">[</span><span class="s1">&#39;game_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;game&#39;</span><span class="p">][</span><span class="s1">&#39;game_id&#39;</span><span class="p">]</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">game_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">games</span><span class="p">)</span>
+<span class="n">game_df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">game_df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">)</span>
+<span class="n">game_df</span> <span class="o">=</span> <span class="n">game_df</span><span class="p">[</span><span class="o">~</span><span class="n">game_df</span><span class="p">[</span><span class="s1">&#39;game_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">&#39;allstar&#39;</span><span class="p">)]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="c1">#don&#39;t care about allstar games</span>
+
+<span class="n">batting_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">batting</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">batting_df</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">x</span> <span class="ow">in</span> <span class="n">k</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;team&#39;</span><span class="p">,</span><span class="s1">&#39;game_id&#39;</span><span class="p">,</span> <span class="s1">&#39;home_away&#39;</span><span class="p">]):</span> <span class="k">continue</span>
+    <span class="n">batting_df</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">batting_df</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">,</span> <span class="n">downcast</span><span class="o">=</span><span class="s1">&#39;float&#39;</span><span class="p">)</span>
+<span class="n">batting_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;details&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">pitching_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">pitching</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">pitching_df</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">x</span> <span class="ow">in</span> <span class="n">k</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;team&#39;</span><span class="p">,</span><span class="s1">&#39;game_id&#39;</span><span class="p">,</span> <span class="s1">&#39;home_away&#39;</span><span class="p">]):</span> <span class="k">continue</span>
+    <span class="n">pitching_df</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">pitching_df</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">,</span> <span class="n">downcast</span><span class="o">=</span><span class="s1">&#39;float&#39;</span><span class="p">)</span>
+<span class="n">pitcher_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">pitchers</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">pitcher_df</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">x</span> <span class="ow">in</span> <span class="n">k</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;team&#39;</span><span class="p">,</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="s1">&#39;game_id&#39;</span><span class="p">,</span> <span class="s1">&#39;home_away&#39;</span><span class="p">]):</span> <span class="k">continue</span>
+    <span class="n">pitcher_df</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">pitcher_df</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">,</span> <span class="n">downcast</span><span class="o">=</span><span class="s1">&#39;float&#39;</span><span class="p">)</span>
+<span class="c1"># filter the pitcher performances to just the starting pitcher</span>
+<span class="n">pitcher_df</span> <span class="o">=</span> <span class="n">pitcher_df</span><span class="p">[</span><span class="o">~</span><span class="n">pitcher_df</span><span class="p">[</span><span class="s1">&#39;game_score&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">pitcher_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">pitcher_df</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="s1">&#39;inherited&#39;</span> <span class="ow">in</span> <span class="n">x</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Created game_df, batting_df, pitching_df and pitcher_df&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+</p>
+    </details>
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Created game_df, batting_df, pitching_df and pitcher_df
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now we'll create all the calculated features of the model that we made in Part 2 of this blog</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<details class="description">
+      <summary class="btn btn-sm" data-open="Hide Code" data-close="Show Code"></summary>
+        <p><div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">def</span> <span class="nf">add_rolling</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">stat_columns</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">stat_columns</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">&#39;object&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">):</span> <span class="k">continue</span>
+        <span class="n">df</span><span class="p">[</span><span class="n">s</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">period</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;_Avg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;team&#39;</span><span class="p">)[</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="n">period</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+        <span class="n">df</span><span class="p">[</span><span class="n">s</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">period</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;_Std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;team&#39;</span><span class="p">)[</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="n">period</span><span class="p">)</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
+        <span class="n">df</span><span class="p">[</span><span class="n">s</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">period</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;_Skew&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;team&#39;</span><span class="p">)[</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="n">period</span><span class="p">)</span><span class="o">.</span><span class="n">skew</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">df</span>
+
+<span class="k">def</span> <span class="nf">get_diff_df</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">is_pitcher</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="c1">#runs for each of the stat dataframes, returns the difference in stats</span>
+
+    <span class="c1">#set up dataframe with time index</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;game_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">newindex</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">)[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span>\
+             <span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">timedelta64</span><span class="p">))</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">newindex</span><span class="p">)</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+
+    <span class="c1"># get stat columns</span>
+    <span class="n">stat_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="s1">&#39;int&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)]</span>
+    <span class="n">stat_cols</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="s1">&#39;float&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)])</span>
+
+    <span class="c1">#add lags</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">add_rolling</span><span class="p">(</span><span class="s1">&#39;5d&#39;</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">stat_cols</span><span class="p">)</span> <span class="c1"># this game series</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">add_rolling</span><span class="p">(</span><span class="s1">&#39;10d&#39;</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">stat_cols</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">add_rolling</span><span class="p">(</span><span class="s1">&#39;45d&#39;</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">stat_cols</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">add_rolling</span><span class="p">(</span><span class="s1">&#39;180d&#39;</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">stat_cols</span><span class="p">)</span> <span class="c1"># this season</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">add_rolling</span><span class="p">(</span><span class="s1">&#39;730d&#39;</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">stat_cols</span><span class="p">)</span> <span class="c1"># 2 years</span>
+
+    <span class="c1"># reset stat columns to just the lags (removing the original stats)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">stat_cols</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">stat_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="s1">&#39;int&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)]</span>
+    <span class="n">stat_cols</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="s1">&#39;float&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)])</span>
+
+    <span class="c1"># shift results so that each row is  a pregame stat</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">stat_cols</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">is_pitcher</span><span class="p">:</span>
+            <span class="n">df</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)[</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">df</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;team&#39;</span><span class="p">)[</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># calculate differences in pregame stats from home vs. away teams</span>
+    <span class="n">away_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">~</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;is_home_team&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">away_df</span> <span class="o">=</span> <span class="n">away_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;game_id&#39;</span><span class="p">)</span>
+    <span class="n">away_df</span> <span class="o">=</span> <span class="n">away_df</span><span class="p">[</span><span class="n">stat_cols</span><span class="p">]</span>
+
+    <span class="n">home_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;is_home_team&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">home_df</span> <span class="o">=</span> <span class="n">home_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;game_id&#39;</span><span class="p">)</span>
+    <span class="n">home_df</span> <span class="o">=</span> <span class="n">home_df</span><span class="p">[</span><span class="n">stat_cols</span><span class="p">]</span>
+
+    <span class="n">diff_df</span> <span class="o">=</span> <span class="n">home_df</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">away_df</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">diff_df</span> <span class="o">=</span> <span class="n">diff_df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+
+    <span class="c1"># clean column names</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">stat_cols</span><span class="p">:</span>
+        <span class="n">diff_df</span><span class="p">[</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">diff_df</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+        <span class="n">diff_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">diff_df</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">game_df</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">get_diff_df</span><span class="p">(</span><span class="n">batting_df</span><span class="p">,</span> <span class="s1">&#39;batting&#39;</span><span class="p">),</span>
+               <span class="n">on</span> <span class="o">=</span> <span class="s1">&#39;game_id&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">get_diff_df</span><span class="p">(</span><span class="n">pitching_df</span><span class="p">,</span> <span class="s1">&#39;pitching&#39;</span><span class="p">),</span>
+               <span class="n">on</span> <span class="o">=</span> <span class="s1">&#39;game_id&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">get_diff_df</span><span class="p">(</span><span class="n">pitcher_df</span><span class="p">,</span> <span class="s1">&#39;pitcher&#39;</span><span class="p">,</span><span class="n">is_pitcher</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+               <span class="n">on</span> <span class="o">=</span> <span class="s1">&#39;game_id&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
+
+<span class="c1">#pitcher rest feature</span>
+<span class="n">pitcher_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">pitchers</span><span class="p">)</span> <span class="c1"># old version was filtered to just starters</span>
+<span class="n">dates</span> <span class="o">=</span> <span class="n">pitcher_df</span><span class="p">[</span><span class="s1">&#39;game_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">pitcher_df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">dates</span><span class="p">,</span><span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">)</span>
+<span class="n">pitcher_df</span><span class="p">[</span><span class="s1">&#39;rest&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pitcher_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">days</span>
+<span class="c1"># filter the pitcher performances to just the starting pitcher</span>
+<span class="n">pitcher_df</span> <span class="o">=</span> <span class="n">pitcher_df</span><span class="p">[</span><span class="o">~</span><span class="n">pitcher_df</span><span class="p">[</span><span class="s1">&#39;game_score&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">home_pitchers</span> <span class="o">=</span> <span class="n">pitcher_df</span><span class="p">[</span><span class="n">pitcher_df</span><span class="p">[</span><span class="s1">&#39;is_home_team&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="n">home_pitchers</span><span class="p">[[</span><span class="s1">&#39;game_id&#39;</span><span class="p">,</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;rest&#39;</span><span class="p">]],</span>
+              <span class="n">left_on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;game_id&#39;</span><span class="p">,</span><span class="s1">&#39;home_pitcher&#39;</span><span class="p">],</span>
+              <span class="n">right_on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;game_id&#39;</span><span class="p">,</span><span class="s1">&#39;name&#39;</span><span class="p">],</span>
+              <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;rest&#39;</span><span class="p">:</span><span class="s1">&#39;home_pitcher_rest&#39;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">away_pitchers</span> <span class="o">=</span> <span class="n">pitcher_df</span><span class="p">[</span><span class="o">~</span><span class="n">pitcher_df</span><span class="p">[</span><span class="s1">&#39;is_home_team&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="n">away_pitchers</span><span class="p">[[</span><span class="s1">&#39;game_id&#39;</span><span class="p">,</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="s1">&#39;rest&#39;</span><span class="p">]],</span>
+              <span class="n">left_on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;game_id&#39;</span><span class="p">,</span><span class="s1">&#39;away_pitcher&#39;</span><span class="p">],</span>
+              <span class="n">right_on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;game_id&#39;</span><span class="p">,</span><span class="s1">&#39;name&#39;</span><span class="p">],</span>
+              <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;rest&#39;</span><span class="p">:</span><span class="s1">&#39;away_pitcher_rest&#39;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;rest_diff&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;home_pitcher_rest&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;away_pitcher_rest&#39;</span><span class="p">]</span>
+
+<span class="c1">#datetime features</span>
+<span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;season&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;month&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">month</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;week&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">isocalendar</span><span class="p">()</span><span class="o">.</span><span class="n">week</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;int&#39;</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;dow&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">weekday</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">])</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s2">&quot;1970-01-01&quot;</span><span class="p">))</span> <span class="o">//</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="s1">&#39;1s&#39;</span><span class="p">)</span> <span class="c1">#epoch time</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The shape of our main dataframe is now (rows x columns):&quot;</span><span class="p">,</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+</p>
+    </details>
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>The shape of our main dataframe is now (rows x columns): (10596, 1037)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now we'll add the power rankings using the code we built in Part 3 of this series.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<details class="description">
+      <summary class="btn btn-sm" data-open="Hide Code" data-close="Show Code"></summary>
+        <p><div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="kn">from</span> <span class="nn">elote</span> <span class="kn">import</span> <span class="n">EloCompetitor</span>
+<span class="n">ratings</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+    <span class="n">ratings</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">=</span><span class="n">EloCompetitor</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+    <span class="n">ratings</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">=</span><span class="n">EloCompetitor</span><span class="p">()</span>
+
+<span class="n">home_team_elo</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">away_team_elo</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">elo_exp</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="c1"># get pre-game ratings</span>
+    <span class="n">elo_exp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="p">]</span><span class="o">.</span><span class="n">expected_score</span><span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="p">]))</span>
+    <span class="n">home_team_elo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="p">]</span><span class="o">.</span><span class="n">rating</span><span class="p">)</span>
+    <span class="n">away_team_elo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="p">]</span><span class="o">.</span><span class="n">rating</span><span class="p">)</span>
+    <span class="c1"># update ratings</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">home_team_win</span><span class="p">:</span>
+        <span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="p">]</span><span class="o">.</span><span class="n">beat</span><span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="p">]</span><span class="o">.</span><span class="n">beat</span><span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="p">])</span>
+
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;elo_exp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">elo_exp</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;home_team_elo&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">home_team_elo</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;away_team_elo&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">away_team_elo</span>
+
+<span class="c1">#elo slow</span>
+<span class="n">ratings</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+    <span class="n">ratings</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">=</span><span class="n">EloCompetitor</span><span class="p">()</span>
+    <span class="n">ratings</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">_k_score</span><span class="o">=</span><span class="mi">16</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+    <span class="n">ratings</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">=</span><span class="n">EloCompetitor</span><span class="p">()</span>
+    <span class="n">ratings</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">_k_score</span><span class="o">=</span><span class="mi">16</span>
+
+<span class="n">home_team_elo</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">away_team_elo</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">elo_exp</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="c1"># get pregame ratings</span>
+    <span class="n">elo_exp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="p">]</span><span class="o">.</span><span class="n">expected_score</span><span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="p">]))</span>
+    <span class="n">home_team_elo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="p">]</span><span class="o">.</span><span class="n">rating</span><span class="p">)</span>
+    <span class="n">away_team_elo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="p">]</span><span class="o">.</span><span class="n">rating</span><span class="p">)</span>
+    <span class="c1"># update ratings</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">home_team_win</span><span class="p">:</span>
+        <span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="p">]</span><span class="o">.</span><span class="n">beat</span><span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="p">]</span><span class="o">.</span><span class="n">beat</span><span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="p">])</span>
+
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;elo_slow_exp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">elo_exp</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;home_team_elo_slow&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">home_team_elo</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;away_team_elo_slow&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">away_team_elo</span>
+
+<span class="c1">#glicko</span>
+<span class="kn">from</span> <span class="nn">elote</span> <span class="kn">import</span> <span class="n">GlickoCompetitor</span>
+<span class="n">ratings</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+    <span class="n">ratings</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">=</span><span class="n">GlickoCompetitor</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+    <span class="n">ratings</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">=</span><span class="n">GlickoCompetitor</span><span class="p">()</span>
+
+<span class="n">home_team_glick</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">away_team_glick</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">glick_exp</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="c1"># get pregame ratings</span>
+    <span class="n">glick_exp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="p">]</span><span class="o">.</span><span class="n">expected_score</span><span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="p">]))</span>
+    <span class="n">home_team_glick</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="p">]</span><span class="o">.</span><span class="n">rating</span><span class="p">)</span>
+    <span class="n">away_team_glick</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="p">]</span><span class="o">.</span><span class="n">rating</span><span class="p">)</span>
+    <span class="c1"># update ratings</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">home_team_win</span><span class="p">:</span>
+        <span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="p">]</span><span class="o">.</span><span class="n">beat</span><span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="p">]</span><span class="o">.</span><span class="n">beat</span><span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="p">])</span>
+
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;glick_exp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">glick_exp</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;home_team_glick&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">home_team_glick</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;away_team_glick&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">away_team_glick</span>
+
+<span class="c1">#trueskill</span>
+<span class="kn">from</span> <span class="nn">trueskill</span> <span class="kn">import</span> <span class="n">Rating</span><span class="p">,</span> <span class="n">quality</span><span class="p">,</span> <span class="n">rate</span>
+<span class="n">ratings</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+    <span class="n">ratings</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">=</span><span class="n">Rating</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+    <span class="n">ratings</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">=</span><span class="n">Rating</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">home_pitcher</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+    <span class="n">ratings</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">=</span><span class="n">Rating</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">away_pitcher</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+    <span class="n">ratings</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">=</span><span class="n">Rating</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span>
+
+<span class="n">ts_quality</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">pitcher_ts_diff</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">team_ts_diff</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">home_pitcher_ts</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">away_pitcher_ts</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">home_team_ts</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">away_team_ts</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="c1"># get pre-match trueskill ratings from dict</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="p">[(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="p">],</span> <span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">home_pitcher</span><span class="p">]),</span>
+            <span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="p">],</span> <span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">away_pitcher</span><span class="p">])]</span>
+    <span class="n">ts_quality</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">quality</span><span class="p">(</span><span class="n">match</span><span class="p">))</span>
+    <span class="n">pitcher_ts_diff</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">home_pitcher</span><span class="p">]</span><span class="o">.</span><span class="n">mu</span><span class="o">-</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">away_pitcher</span><span class="p">]</span><span class="o">.</span><span class="n">mu</span><span class="p">)</span>
+    <span class="n">team_ts_diff</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="p">]</span><span class="o">.</span><span class="n">mu</span><span class="o">-</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="p">]</span><span class="o">.</span><span class="n">mu</span><span class="p">)</span>
+    <span class="n">home_pitcher_ts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">home_pitcher</span><span class="p">]</span><span class="o">.</span><span class="n">mu</span><span class="p">)</span>
+    <span class="n">away_pitcher_ts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">away_pitcher</span><span class="p">]</span><span class="o">.</span><span class="n">mu</span><span class="p">)</span>
+    <span class="n">home_team_ts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="p">]</span><span class="o">.</span><span class="n">mu</span><span class="p">)</span>
+    <span class="n">away_team_ts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="p">]</span><span class="o">.</span><span class="n">mu</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">date</span> <span class="o">&lt;</span> <span class="n">df</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">max</span><span class="p">():</span>
+        <span class="c1"># update ratings dictionary with post-match ratings</span>
+        <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">home_team_win</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="p">[(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="p">],</span> <span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">home_pitcher</span><span class="p">]),</span>
+                     <span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="p">],</span> <span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">away_pitcher</span><span class="p">])]</span>
+            <span class="p">[(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="p">],</span> <span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">home_pitcher</span><span class="p">]),</span>
+            <span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="p">],</span> <span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">away_pitcher</span><span class="p">])]</span> <span class="o">=</span> <span class="n">rate</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="p">[(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="p">],</span> <span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">away_pitcher</span><span class="p">]),</span>
+                     <span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="p">],</span> <span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">home_pitcher</span><span class="p">])]</span>
+            <span class="p">[(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="p">],</span> <span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">away_pitcher</span><span class="p">]),</span>
+            <span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="p">],</span> <span class="n">ratings</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">home_pitcher</span><span class="p">])]</span> <span class="o">=</span> <span class="n">rate</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
+
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;ts_game_quality&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts_quality</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;pitcher_ts_diff&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pitcher_ts_diff</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;team_ts_diff&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">team_ts_diff</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;home_pitcher_ts&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">home_pitcher_ts</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;away_pitcher_ts&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">away_pitcher_ts</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;home_team_ts&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">home_team_ts</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;away_team_ts&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">away_team_ts</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The shape of our main dataframe after adding skill rankings is (rows x columns):&quot;</span><span class="p">,</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+</p>
+    </details>
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>The shape of our main dataframe after adding skill rankings is (rows x columns): (10596, 1053)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now to update the odds data and get it into the dataframe properly</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="kn">import</span> <span class="nn">pickle</span>
+<span class="n">odds_data</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;covers_data_2.pkl&#39;</span><span class="p">,</span><span class="s1">&#39;rb&#39;</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+
+<span class="n">dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">)</span>
+<span class="n">game_days</span> <span class="o">=</span> <span class="n">dates</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+<span class="n">existing_odds_days</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">][:</span><span class="mi">10</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">odds_data</span><span class="p">]</span>
+<span class="n">new_game_days</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">game_days</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">existing_odds_days</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">new_game_days</span><span class="p">:</span>
+    <span class="c1"># get the web page with game data on it</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;https://www.covers.com/Sports/MLB/Matchups?selectedDate=</span><span class="si">{</span><span class="n">d</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+
+    <span class="c1"># parse the games</span>
+    <span class="n">scraped_games</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">,{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span><span class="s1">&#39;cmg_matchup_game_box&#39;</span><span class="p">})</span>
+    <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">scraped_games</span><span class="p">:</span>
+        <span class="n">game</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">game</span><span class="p">[</span><span class="s1">&#39;home_moneyline&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;data-game-odd&#39;</span><span class="p">]</span>
+        <span class="n">game</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;data-game-date&#39;</span><span class="p">]</span>
+        <span class="n">game</span><span class="p">[</span><span class="s1">&#39;away_team_abbr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;data-away-team-shortname-search&#39;</span><span class="p">]</span>
+        <span class="n">game</span><span class="p">[</span><span class="s1">&#39;home_team_abbr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;data-home-team-shortname-search&#39;</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">game</span><span class="p">[</span><span class="s1">&#39;home_score&#39;</span><span class="p">]</span> <span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">,{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span><span class="s1">&#39;cmg_matchup_list_score_home&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">game</span><span class="p">[</span><span class="s1">&#39;away_score&#39;</span><span class="p">]</span> <span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">,{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span><span class="s1">&#39;cmg_matchup_list_score_away&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">game</span><span class="p">[</span><span class="s1">&#39;home_score&#39;</span><span class="p">]</span> <span class="o">=</span><span class="s1">&#39;&#39;</span>
+            <span class="n">game</span><span class="p">[</span><span class="s1">&#39;away_score&#39;</span><span class="p">]</span> <span class="o">=</span><span class="s1">&#39;&#39;</span>
+
+        <span class="n">odds_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">game</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Done! Days of odds downloaded:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_game_days</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Done! Days of odds downloaded: 4
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's integrate that into the dataframe in the same way as in Part 3</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<details class="description">
+      <summary class="btn btn-sm" data-open="Hide Code" data-close="Show Code"></summary>
+        <p><div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="n">odds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">odds_data</span><span class="p">)</span>
+<span class="n">odds</span><span class="p">[</span><span class="s1">&#39;home_moneyline&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">odds</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;home_moneyline&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">odds</span><span class="o">.</span><span class="n">home_moneyline</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">odds</span><span class="o">.</span><span class="n">home_moneyline</span><span class="p">)</span>
+<span class="n">odds</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">odds</span><span class="o">.</span><span class="n">date</span><span class="p">)</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">date</span>
+
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="n">action</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">FutureWarning</span><span class="p">)</span>
+
+<span class="n">odds</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="p">[</span><span class="n">odds</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="o">==</span><span class="s1">&#39;SF&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;SFG&#39;</span>
+<span class="n">odds</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="p">[</span><span class="n">odds</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="o">==</span><span class="s1">&#39;TB&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;TBR&#39;</span>
+<span class="n">odds</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="p">[</span><span class="n">odds</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="o">==</span><span class="s1">&#39;WAS&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;WSN&#39;</span>
+<span class="n">odds</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="p">[</span><span class="n">odds</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="o">==</span><span class="s1">&#39;KC&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;KCR&#39;</span>
+<span class="n">odds</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="p">[</span><span class="n">odds</span><span class="o">.</span><span class="n">home_team_abbr</span><span class="o">==</span><span class="s1">&#39;SD&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;SDP&#39;</span>
+
+<span class="n">odds</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="p">[</span><span class="n">odds</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="o">==</span><span class="s1">&#39;SF&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;SFG&#39;</span>
+<span class="n">odds</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="p">[</span><span class="n">odds</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="o">==</span><span class="s1">&#39;TB&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;TBR&#39;</span>
+<span class="n">odds</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="p">[</span><span class="n">odds</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="o">==</span><span class="s1">&#39;WAS&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;WSN&#39;</span>
+<span class="n">odds</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="p">[</span><span class="n">odds</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="o">==</span><span class="s1">&#39;KC&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;KCR&#39;</span>
+<span class="n">odds</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="p">[</span><span class="n">odds</span><span class="o">.</span><span class="n">away_team_abbr</span><span class="o">==</span><span class="s1">&#39;SD&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;SDP&#39;</span>
+
+<span class="n">odds</span><span class="p">[</span><span class="s1">&#39;odds_proba&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+<span class="n">odds</span><span class="p">[</span><span class="s1">&#39;odds_proba&#39;</span><span class="p">][</span><span class="n">odds</span><span class="o">.</span><span class="n">home_moneyline</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">odds</span><span class="o">.</span><span class="n">home_moneyline</span><span class="o">/</span><span class="p">(</span><span class="o">-</span><span class="n">odds</span><span class="o">.</span><span class="n">home_moneyline</span> <span class="o">+</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">odds</span><span class="p">[</span><span class="s1">&#39;odds_proba&#39;</span><span class="p">][</span><span class="n">odds</span><span class="o">.</span><span class="n">home_moneyline</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">100</span><span class="o">/</span><span class="p">(</span><span class="n">odds</span><span class="o">.</span><span class="n">home_moneyline</span> <span class="o">+</span> <span class="mi">100</span><span class="p">))</span>
+
+<span class="c1"># get dates into the same format</span>
+<span class="n">odds</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">odds</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]))</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s2">&quot;1970-01-01&quot;</span><span class="p">))</span> <span class="o">//</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="s1">&#39;1s&#39;</span><span class="p">)</span>
+
+<span class="c1"># do the merge</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge_asof</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">),</span>
+                   <span class="n">right</span><span class="o">=</span><span class="n">odds</span><span class="p">[[</span><span class="s1">&#39;home_team_abbr&#39;</span><span class="p">,</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="s1">&#39;away_team_abbr&#39;</span><span class="p">,</span><span class="s1">&#39;odds_proba&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">),</span>
+                   <span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;home_team_abbr&#39;</span><span class="p">,</span><span class="s1">&#39;away_team_abbr&#39;</span><span class="p">],</span>
+                   <span class="n">on</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Dataframe shape after adding odds data:&#39;</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+</p>
+    </details>
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Dataframe shape after adding odds data: (10596, 1054)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Today&#39;s Games and the Home Team Win Probabilities&quot;</span><span class="p">)</span>
+<span class="n">test_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;is_test&#39;</span><span class="p">]][[</span><span class="s1">&#39;home_team_abbr&#39;</span><span class="p">,</span> <span class="s1">&#39;away_team_abbr&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;home_pitcher&#39;</span><span class="p">,</span><span class="s1">&#39;away_pitcher&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;odds_proba&#39;</span><span class="p">]]</span>
+<span class="n">display</span><span class="p">(</span><span class="n">test_df</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Today&#39;s Games and the Home Team Win Probabilities
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>home_team_abbr</th>
+      <th>away_team_abbr</th>
+      <th>home_pitcher</th>
+      <th>away_pitcher</th>
+      <th>odds_proba</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>10581</th>
+      <td>NYY</td>
+      <td>MIA</td>
+      <td>garcide01</td>
+      <td>rogertr01</td>
+      <td>0.708455</td>
+    </tr>
+    <tr>
+      <th>10582</th>
+      <td>WSN</td>
+      <td>NYM</td>
+      <td>scherma01</td>
+      <td>degroja01</td>
+      <td>0.434783</td>
+    </tr>
+    <tr>
+      <th>10583</th>
+      <td>OAK</td>
+      <td>SEA</td>
+      <td>minormi01</td>
+      <td>sheffju01</td>
+      <td>0.677419</td>
+    </tr>
+    <tr>
+      <th>10584</th>
+      <td>TOR</td>
+      <td>BAL</td>
+      <td>zeuchtj01</td>
+      <td>meansjo01</td>
+      <td>0.565217</td>
+    </tr>
+    <tr>
+      <th>10585</th>
+      <td>KCR</td>
+      <td>DET</td>
+      <td>hernaca04</td>
+      <td>boydma01</td>
+      <td>0.565217</td>
+    </tr>
+    <tr>
+      <th>10586</th>
+      <td>TEX</td>
+      <td>HOU</td>
+      <td></td>
+      <td></td>
+      <td>0.444444</td>
+    </tr>
+    <tr>
+      <th>10587</th>
+      <td>TBR</td>
+      <td>PHI</td>
+      <td>curtijo02</td>
+      <td>wheelza01</td>
+      <td>0.512195</td>
+    </tr>
+    <tr>
+      <th>10588</th>
+      <td>STL</td>
+      <td>MIL</td>
+      <td>wainwad01</td>
+      <td>woodrbr01</td>
+      <td>0.500000</td>
+    </tr>
+    <tr>
+      <th>10589</th>
+      <td>ATL</td>
+      <td>BOS</td>
+      <td></td>
+      <td>houckta01</td>
+      <td>0.598394</td>
+    </tr>
+    <tr>
+      <th>10590</th>
+      <td>CHW</td>
+      <td>CHC</td>
+      <td>dunnida01</td>
+      <td>lestejo01</td>
+      <td>0.607843</td>
+    </tr>
+    <tr>
+      <th>10591</th>
+      <td>CLE</td>
+      <td>PIT</td>
+      <td>civalaa01</td>
+      <td>musgrjo01</td>
+      <td>0.636364</td>
+    </tr>
+    <tr>
+      <th>10592</th>
+      <td>MIN</td>
+      <td>CIN</td>
+      <td>pinedmi01</td>
+      <td>castilu02</td>
+      <td>0.565217</td>
+    </tr>
+    <tr>
+      <th>10593</th>
+      <td>ARI</td>
+      <td>COL</td>
+      <td>weavelu01</td>
+      <td>marquge01</td>
+      <td>0.534884</td>
+    </tr>
+    <tr>
+      <th>10594</th>
+      <td>LAD</td>
+      <td>LAA</td>
+      <td>gonsoto01</td>
+      <td>bundydy01</td>
+      <td>0.649123</td>
+    </tr>
+    <tr>
+      <th>10595</th>
+      <td>SFG</td>
+      <td>SDP</td>
+      <td>cuetojo01</td>
+      <td>davieza02</td>
+      <td>0.420168</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Generate-Predictions">Generate Predictions<a class="anchor-link" href="#Generate-Predictions"> </a></h2><p>We'll continue to use code from the previous part of the series to prepare the data for predictions.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="n">encode_me</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="s1">&#39;object&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)]</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">encode_me</span><span class="p">:</span>
+    <span class="n">df</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="s1">&#39;home_team_win&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="mi">180</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># create Prediction Set</span>
+<span class="n">X_test</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;is_test&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;home_team_win&#39;</span><span class="p">,</span> <span class="s1">&#39;game_id&#39;</span><span class="p">,</span><span class="s1">&#39;is_test&#39;</span><span class="p">])</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>15</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="kn">import</span> <span class="nn">pickle</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;xgb_model.pkl&#39;</span><span class="p">,</span><span class="s1">&#39;rb&#39;</span><span class="p">))</span>
+
+<span class="n">test_df</span><span class="p">[</span><span class="s1">&#39;xgb_home_win&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;bool&#39;</span><span class="p">)</span>
+<span class="n">test_df</span><span class="p">[</span><span class="s1">&#39;xgb_home_win_proba&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">test_df</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>home_team_abbr</th>
+      <th>away_team_abbr</th>
+      <th>home_pitcher</th>
+      <th>away_pitcher</th>
+      <th>odds_proba</th>
+      <th>xgb_home_win</th>
+      <th>xgb_home_win_proba</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>10581</th>
+      <td>NYY</td>
+      <td>MIA</td>
+      <td>garcide01</td>
+      <td>rogertr01</td>
+      <td>0.708455</td>
+      <td>True</td>
+      <td>0.701283</td>
+    </tr>
+    <tr>
+      <th>10582</th>
+      <td>WSN</td>
+      <td>NYM</td>
+      <td>scherma01</td>
+      <td>degroja01</td>
+      <td>0.434783</td>
+      <td>False</td>
+      <td>0.315103</td>
+    </tr>
+    <tr>
+      <th>10583</th>
+      <td>OAK</td>
+      <td>SEA</td>
+      <td>minormi01</td>
+      <td>sheffju01</td>
+      <td>0.677419</td>
+      <td>True</td>
+      <td>0.618798</td>
+    </tr>
+    <tr>
+      <th>10584</th>
+      <td>TOR</td>
+      <td>BAL</td>
+      <td>zeuchtj01</td>
+      <td>meansjo01</td>
+      <td>0.565217</td>
+      <td>False</td>
+      <td>0.492718</td>
+    </tr>
+    <tr>
+      <th>10585</th>
+      <td>KCR</td>
+      <td>DET</td>
+      <td>hernaca04</td>
+      <td>boydma01</td>
+      <td>0.565217</td>
+      <td>False</td>
+      <td>0.482250</td>
+    </tr>
+    <tr>
+      <th>10586</th>
+      <td>TEX</td>
+      <td>HOU</td>
+      <td></td>
+      <td></td>
+      <td>0.444444</td>
+      <td>False</td>
+      <td>0.410267</td>
+    </tr>
+    <tr>
+      <th>10587</th>
+      <td>TBR</td>
+      <td>PHI</td>
+      <td>curtijo02</td>
+      <td>wheelza01</td>
+      <td>0.512195</td>
+      <td>False</td>
+      <td>0.378972</td>
+    </tr>
+    <tr>
+      <th>10588</th>
+      <td>STL</td>
+      <td>MIL</td>
+      <td>wainwad01</td>
+      <td>woodrbr01</td>
+      <td>0.500000</td>
+      <td>False</td>
+      <td>0.395375</td>
+    </tr>
+    <tr>
+      <th>10589</th>
+      <td>ATL</td>
+      <td>BOS</td>
+      <td></td>
+      <td>houckta01</td>
+      <td>0.598394</td>
+      <td>True</td>
+      <td>0.549559</td>
+    </tr>
+    <tr>
+      <th>10590</th>
+      <td>CHW</td>
+      <td>CHC</td>
+      <td>dunnida01</td>
+      <td>lestejo01</td>
+      <td>0.607843</td>
+      <td>True</td>
+      <td>0.570431</td>
+    </tr>
+    <tr>
+      <th>10591</th>
+      <td>CLE</td>
+      <td>PIT</td>
+      <td>civalaa01</td>
+      <td>musgrjo01</td>
+      <td>0.636364</td>
+      <td>True</td>
+      <td>0.650989</td>
+    </tr>
+    <tr>
+      <th>10592</th>
+      <td>MIN</td>
+      <td>CIN</td>
+      <td>pinedmi01</td>
+      <td>castilu02</td>
+      <td>0.565217</td>
+      <td>True</td>
+      <td>0.553619</td>
+    </tr>
+    <tr>
+      <th>10593</th>
+      <td>ARI</td>
+      <td>COL</td>
+      <td>weavelu01</td>
+      <td>marquge01</td>
+      <td>0.534884</td>
+      <td>False</td>
+      <td>0.441937</td>
+    </tr>
+    <tr>
+      <th>10594</th>
+      <td>LAD</td>
+      <td>LAA</td>
+      <td>gonsoto01</td>
+      <td>bundydy01</td>
+      <td>0.649123</td>
+      <td>True</td>
+      <td>0.624194</td>
+    </tr>
+    <tr>
+      <th>10595</th>
+      <td>SFG</td>
+      <td>SDP</td>
+      <td>cuetojo01</td>
+      <td>davieza02</td>
+      <td>0.420168</td>
+      <td>False</td>
+      <td>0.405266</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This is good. It looks like our model disagrees with the casino odds for a few games. One trap you need to be thinking about is that when a pitcher is not announced, xgboost is still going to give you a prediction. It will be a very different prediction if you tell it about the pitchers, my advice is to wait for the pitcher announcements.</p>
+<p>Next step is to figure our if any of these games are good bets.</p>
+<h2 id="Kelly-Criterion">Kelly Criterion<a class="anchor-link" href="#Kelly-Criterion"> </a></h2><p>The <a href="https://en.wikipedia.org/wiki/Kelly_criterion">Kelly criterion</a> is a betting strategy developed in the 50's that tells you the percentage of your bankroll to bet based on your advantage in the bets. Its objective is to maximize profit while minimizing risk of ruin, and it's been rigorously proven time and again.</p>
+<p>People still hate it though. The major criticism is that it sets you up for some pretty extreme bets. People have found two major ways of dealing with this. The first is using a <a href="https://www.pinnacle.com/en/betting-articles/Betting-Strategy/fractional-kelly-criterion/GBD27Z9NLJVGFLGG">fractional-Kelly</a>, usually a half-Kelly or quarter-Kelly, where they will use the Kelly formula and bet half or a quarter as much as it tells them. The other is a diversified approach, where the better will place several simultaneous bets dedicating a fraction of their bankroll to each bet. It's easy to utilize the latter in baseball, since multiple games are happening simultaneously.</p>
+<p>Implementing the formula is pretty straight forward. We're going to loop through the data from above, applying the formula to both the home and away teams, then print out only the bets that the formula says have good expected value.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span>
+<span class="n">bets</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">r</span> <span class="ow">in</span> <span class="n">test_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;xgb_home_win_proba&#39;</span><span class="p">]</span> <span class="c1"># probability of win</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;odds_proba&#39;</span><span class="p">])</span><span class="o">-</span><span class="mi">1</span> <span class="c1">#return</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;xgb_home_win_proba&#39;</span><span class="p">]</span> <span class="c1"># probability of loss</span>
+    <span class="n">bet</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
+        <span class="s1">&#39;team&#39;</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;home_team_abbr&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;pitcher&#39;</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;home_pitcher&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;opposition&#39;</span><span class="p">:</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;away_team_abbr&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;opp_pitcher&#39;</span><span class="p">:</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;away_pitcher&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;odds_proba&#39;</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;odds_proba&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;dollar return&#39;</span><span class="p">:</span> <span class="n">b</span><span class="p">,</span>
+        <span class="s1">&#39;ml_proba&#39;</span><span class="p">:</span> <span class="n">p</span><span class="p">,</span>
+        <span class="s1">&#39;kelly_criterion&#39;</span><span class="p">:</span> <span class="n">p</span><span class="o">-</span><span class="p">(</span><span class="n">q</span><span class="o">/</span><span class="n">b</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="n">bets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bet</span><span class="p">)</span>
+
+    <span class="c1"># away team</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;xgb_home_win_proba&#39;</span><span class="p">]</span> <span class="c1"># probability of win</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mf">1.02</span><span class="o">-</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;odds_proba&#39;</span><span class="p">]))</span><span class="o">-</span><span class="mi">1</span> <span class="c1">#1.02 is calibrated to mgm vs consensus odds</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;xgb_home_win_proba&#39;</span><span class="p">]</span> <span class="c1"># probability of loss</span>
+
+    <span class="n">bet</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
+        <span class="s1">&#39;team&#39;</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;away_team_abbr&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;pitcher&#39;</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;away_pitcher&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;opposition&#39;</span><span class="p">:</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;home_team_abbr&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;opp_pitcher&#39;</span><span class="p">:</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;home_pitcher&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;odds_proba&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="o">-</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;odds_proba&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;dollar return&#39;</span><span class="p">:</span> <span class="n">b</span><span class="p">,</span>
+        <span class="s1">&#39;ml_proba&#39;</span><span class="p">:</span> <span class="n">p</span><span class="p">,</span>
+        <span class="s1">&#39;kelly_criterion&#39;</span><span class="p">:</span> <span class="n">p</span><span class="o">-</span><span class="p">(</span><span class="n">q</span><span class="o">/</span><span class="n">b</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="n">bets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bet</span><span class="p">)</span>
+<span class="n">bet_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">bets</span><span class="p">)</span>
+<span class="n">HTML</span><span class="p">(</span><span class="n">bet_df</span><span class="p">[</span><span class="n">bet_df</span><span class="p">[</span><span class="s1">&#39;kelly_criterion&#39;</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">to_html</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>date</th>
+      <th>team</th>
+      <th>pitcher</th>
+      <th>opposition</th>
+      <th>opp_pitcher</th>
+      <th>odds_proba</th>
+      <th>dollar return</th>
+      <th>ml_proba</th>
+      <th>kelly_criterion</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>2020-09-26</td>
+      <td>NYM</td>
+      <td>degroja01</td>
+      <td>WSN</td>
+      <td>scherma01</td>
+      <td>0.565217</td>
+      <td>0.708767</td>
+      <td>0.684897</td>
+      <td>0.240319</td>
+    </tr>
+    <tr>
+      <td>2020-09-26</td>
+      <td>SEA</td>
+      <td>sheffju01</td>
+      <td>OAK</td>
+      <td>minormi01</td>
+      <td>0.322581</td>
+      <td>1.919021</td>
+      <td>0.381202</td>
+      <td>0.058747</td>
+    </tr>
+    <tr>
+      <td>2020-09-26</td>
+      <td>BAL</td>
+      <td>meansjo01</td>
+      <td>TOR</td>
+      <td>zeuchtj01</td>
+      <td>0.434783</td>
+      <td>1.198853</td>
+      <td>0.507282</td>
+      <td>0.096290</td>
+    </tr>
+    <tr>
+      <td>2020-09-26</td>
+      <td>DET</td>
+      <td>boydma01</td>
+      <td>KCR</td>
+      <td>hernaca04</td>
+      <td>0.434783</td>
+      <td>1.198853</td>
+      <td>0.517750</td>
+      <td>0.115490</td>
+    </tr>
+    <tr>
+      <td>2020-09-26</td>
+      <td>HOU</td>
+      <td></td>
+      <td>TEX</td>
+      <td></td>
+      <td>0.555556</td>
+      <td>0.737452</td>
+      <td>0.589733</td>
+      <td>0.033403</td>
+    </tr>
+    <tr>
+      <td>2020-09-26</td>
+      <td>PHI</td>
+      <td>wheelza01</td>
+      <td>TBR</td>
+      <td>curtijo02</td>
+      <td>0.487805</td>
+      <td>0.969260</td>
+      <td>0.621028</td>
+      <td>0.230037</td>
+    </tr>
+    <tr>
+      <td>2020-09-26</td>
+      <td>MIL</td>
+      <td>woodrbr01</td>
+      <td>STL</td>
+      <td>wainwad01</td>
+      <td>0.500000</td>
+      <td>0.923077</td>
+      <td>0.604625</td>
+      <td>0.176302</td>
+    </tr>
+    <tr>
+      <td>2020-09-26</td>
+      <td>BOS</td>
+      <td>houckta01</td>
+      <td>ATL</td>
+      <td></td>
+      <td>0.401606</td>
+      <td>1.371880</td>
+      <td>0.450441</td>
+      <td>0.049853</td>
+    </tr>
+    <tr>
+      <td>2020-09-26</td>
+      <td>CHC</td>
+      <td>lestejo01</td>
+      <td>CHW</td>
+      <td>dunnida01</td>
+      <td>0.392157</td>
+      <td>1.426261</td>
+      <td>0.429569</td>
+      <td>0.029620</td>
+    </tr>
+    <tr>
+      <td>2020-09-26</td>
+      <td>CLE</td>
+      <td>civalaa01</td>
+      <td>PIT</td>
+      <td>musgrjo01</td>
+      <td>0.636364</td>
+      <td>0.571429</td>
+      <td>0.650989</td>
+      <td>0.040219</td>
+    </tr>
+    <tr>
+      <td>2020-09-26</td>
+      <td>COL</td>
+      <td>marquge01</td>
+      <td>ARI</td>
+      <td>weavelu01</td>
+      <td>0.465116</td>
+      <td>1.061361</td>
+      <td>0.558063</td>
+      <td>0.141675</td>
+    </tr>
+    <tr>
+      <td>2020-09-26</td>
+      <td>LAA</td>
+      <td>bundydy01</td>
+      <td>LAD</td>
+      <td>gonsoto01</td>
+      <td>0.350877</td>
+      <td>1.696310</td>
+      <td>0.375806</td>
+      <td>0.007834</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Model-Interpretation">Model Interpretation<a class="anchor-link" href="#Model-Interpretation"> </a></h3><p>Above it looks like the algorithm has selected 12 bets for us, with the Kelly formula ranging from &lt;1% of our bankroll to 24%. Let's take a deeper look at each.</p>
+<p>In the first, the algorithm says to put 24% of our bankroll on the Nationals. The casino gives them a 57% chance of willing and so will payback only 1.471 for every dollar we bet ("dollar return"). Our machine learning model gives them a 68.5% chance, so there's money to be made.</p>
+<p>In the second, the algo says bet on Seattle, but only 5.8% of the bankroll. We think they are going to lose, but we thing there's a better chance of them winning than the casino does. Because there's a large payback, Kelly says we should make a bet.</p>
+<p>In the Seattle game, the casino think they are going to lose, and so does our model. But we give them a much better chance of winning, so it makes sense to bet on the underdog. Especially at that level of return.</p>
+<p>In the Houston game, we don't have pitcher data, so maybe we shoudl not bet on that one.</p>
+<p>Etc., etc. I feel like you can take it from here.</p>
+<h2 id="My-Learnings">My Learnings<a class="anchor-link" href="#My-Learnings"> </a></h2><p>I've used this approach this season and done well. It's been a money maker overall. But my results are still super streaky. I've had 2 days in a row where I've gotten every game right, and then whole weeks where I've steadily lost money every day. I haven't had any day where I lost every game, thankfully. But I'm sure it's coming.</p>
+<p>One thing I will say is that it's pretty boring. Betting off a spreadsheet and taking small wins/losses is not exactly an adventure. It starts to feel like more of a job.</p>
+<p>I hope this series has helped you out, either getting you started, or giving you some ideas to incorporate back into your process. Get in touch and let me know. I'd love to hear what you are up to.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="rdpharr/project_notes"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/project_notes/baseball/webscraping/kelly%20criterion/xgboost/2020/09/26/predictions-and-betting-strategy.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/project_notes/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/project_notes/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/project_notes/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>My data and analysis blog</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/rdpharr" title="rdpharr"><svg class="svg-icon grey"><use xlink:href="/project_notes/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/rdpharr" title="rdpharr"><svg class="svg-icon grey"><use xlink:href="/project_notes/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
