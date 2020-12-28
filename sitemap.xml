@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
-<loc>https://rdpharr.github.io/project_notes/baseball/benchmark/webscraping/brier/accuracy/calibration/2020/09/20/baseball_project.html</loc>
+<loc>https://rdpharr.github.io/project_notes/baseball/benchmark/webscraping/brier/accuracy/calibration/machine%20learning/2020/09/20/baseball_project.html</loc>
 <lastmod>2020-09-20T00:00:00-05:00</lastmod>
 </url>
 <url>
-<loc>https://rdpharr.github.io/project_notes/baseball/webscraping/xgboost/brier/accuracy/calibration/2020/09/21/MLB-Part2-First-Model.html</loc>
+<loc>https://rdpharr.github.io/project_notes/baseball/webscraping/xgboost/brier/accuracy/calibration/machine%20learning/2020/09/21/MLB-Part2-First-Model.html</loc>
 <lastmod>2020-09-21T00:00:00-05:00</lastmod>
 </url>
 <url>
-<loc>https://rdpharr.github.io/project_notes/baseball/webscraping/elo/trueskill/glick/2020/09/22/power-rankings-and-casino-odds.html</loc>
+<loc>https://rdpharr.github.io/project_notes/baseball/webscraping/elo/trueskill/glick/machine%20learning/2020/09/22/power-rankings-and-casino-odds.html</loc>
 <lastmod>2020-09-22T00:00:00-05:00</lastmod>
 </url>
 <url>
-<loc>https://rdpharr.github.io/project_notes/baseball/hyperopt/xgboost/2020/09/24/model-optimization.html</loc>
+<loc>https://rdpharr.github.io/project_notes/baseball/hyperopt/xgboost/machine%20learning/2020/09/24/model-optimization.html</loc>
 <lastmod>2020-09-24T00:00:00-05:00</lastmod>
 </url>
 <url>
-<loc>https://rdpharr.github.io/project_notes/baseball/webscraping/kelly%20criterion/xgboost/2020/09/26/predictions-and-betting-strategy.html</loc>
+<loc>https://rdpharr.github.io/project_notes/baseball/webscraping/kelly%20criterion/xgboost/machine%20learning/2020/09/26/predictions-and-betting-strategy.html</loc>
 <lastmod>2020-09-26T00:00:00-05:00</lastmod>
 </url>
 <url>
@@ -25,7 +25,7 @@
 <lastmod>2020-12-14T00:00:00-06:00</lastmod>
 </url>
 <url>
-<loc>https://rdpharr.github.io/project_notes/soccer/benchmark/brier/accuracy/calibration/2020/12/26/eurofootball_odds_analysis.html</loc>
+<loc>https://rdpharr.github.io/project_notes/soccer/benchmark/brier/accuracy/calibration/machine%20learning/2020/12/26/eurofootball_odds_analysis.html</loc>
 <lastmod>2020-12-26T00:00:00-06:00</lastmod>
 </url>
 <url>
