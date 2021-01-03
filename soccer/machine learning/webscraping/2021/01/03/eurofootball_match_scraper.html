@@ -99,7 +99,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      4 min read
+      5 min read
     
 </span></p>
 
@@ -155,7 +155,7 @@ window.onload = wrap_img;
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>The philosophy behind this model is this: people have been trying to figure out the best stat for predicting match outcomes for decades, we don't need to create something new. We can base the model on who has the best stats &amp; probably get a great result. We'll also add in the odds from the casinos, but that's later.</p>
-<p>Right now, we need to download the stats for all those games. on <a href="http://fbref.com">fbref.com</a>, we see 122 different stats per team per game. Sometimes these are at the player level, sometimes at the team level. For this model, I am going to do all calculations at the team level. You'll see that we'll get a good result.</p>
+<p>Right now, we need to download the stats for all those games. On <a href="http://fbref.com">fbref.com</a> we see 122 different stats per team per game. Sometimes these are at the player level, sometimes at the team level. For this model, I am going to do all calculations at the team level. You'll see that we'll get a good result.</p>
 <p>This post is just the web scraper. The next post will build and train a model using the odds from the previous post and the matches from this post.</p>
 
 </div>
@@ -187,7 +187,7 @@ window.onload = wrap_img;
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The next cell processes the schedule pages since 2017 and grabs the links for each indivual match. Before 2017, the stats on fbref are different, not as complete.</p>
+<p>The next cell processes the schedule pages since 2017 and grabs the links for each individual match. Before 2017 the stats on fbref are different, not as complete.</p>
 
 </div>
 </div>
@@ -253,7 +253,7 @@ window.onload = wrap_img;
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Here is the routine that parses the match data. The inline comments give some detail. There is an imporvement needed on to get the full data for the goalkeepers, if more than one is used in the match. This is a pretty rare event, so I haven't written the code to handle it yet.</p>
+<p>Here is the routine that parses the match data. The inline comments give some detail. There is an improvement needed on to get the full data for the goalkeepers if more than one is used in the match. This is a pretty rare event, so I haven't written the code to handle it yet.</p>
 
 </div>
 </div>
@@ -321,7 +321,7 @@ window.onload = wrap_img;
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Below is the iterator to parse all of the matches. If there's an error parsing the match, it provides the link. Most of these are delayed matches. I haven't found any other types of problems.</p>
+<p>Below is the iterator to parse all of the matches. If there's an error parsing the match, it can provide the link. Most of the errors are matches where no stats are available because the match wasn't played. I haven't found any other types of problems.</p>
 
 </div>
 </div>
@@ -394,7 +394,7 @@ window.onload = wrap_img;
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Last, we'll save the output to disk.</p>
+<p>Since that took a really long time, we'll save the output to disk so we don't have to do it again. Also, we'll need that data in subsequent notebooks.</p>
 
 </div>
 </div>
@@ -436,7 +436,7 @@ window.onload = wrap_img;
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>That's 253 columns per match. It's a lot of stats...</p>
+<p>That's 251 columns per match. It's a lot of stats...</p>
 <ul>
 <li>5 for game identification: game_id, date, time, home team and away team</li>
 <li>4 for score (score and score_xg, home and away)</li>
