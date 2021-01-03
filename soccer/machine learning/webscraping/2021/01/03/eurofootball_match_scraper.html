@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>European Football Match Scraper | rdpharr’s projects</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="European Football Match Scraper" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Downloading data for the maching learning model" />
+<meta property="og:description" content="Downloading data for the maching learning model" />
+<link rel="canonical" href="https://rdpharr.github.io/project_notes/soccer/machine%20learning/webscraping/2021/01/03/eurofootball_match_scraper.html" />
+<meta property="og:url" content="https://rdpharr.github.io/project_notes/soccer/machine%20learning/webscraping/2021/01/03/eurofootball_match_scraper.html" />
+<meta property="og:site_name" content="rdpharr’s projects" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-01-03T00:00:00-06:00" />
+<script type="application/ld+json">
+{"url":"https://rdpharr.github.io/project_notes/soccer/machine%20learning/webscraping/2021/01/03/eurofootball_match_scraper.html","@type":"BlogPosting","headline":"European Football Match Scraper","dateModified":"2021-01-03T00:00:00-06:00","datePublished":"2021-01-03T00:00:00-06:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://rdpharr.github.io/project_notes/soccer/machine%20learning/webscraping/2021/01/03/eurofootball_match_scraper.html"},"description":"Downloading data for the maching learning model","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/project_notes/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://rdpharr.github.io/project_notes/feed.xml" title="rdpharr's projects" /><!-- the google_analytics_id gets auto inserted from the config file -->
+
+
+
+<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create','UA-179035902-1','auto');ga('require','displayfeatures');ga('send','pageview');</script>
+
+<link rel="shortcut icon" type="image/x-icon" href="/project_notes/images/favicon.ico"><link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
+<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement( document.body, {
+        delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "[%", right: "%]", display: true},
+            {left: "$", right: "$", display: false}
+        ]}
+        );
+    });
+    </script>
+
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/project_notes/">rdpharr&#39;s projects</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/project_notes/about/">About Me</a><a class="page-link" href="/project_notes/search/">Search</a><a class="page-link" href="/project_notes/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">European Football Match Scraper</h1><p class="page-description">Downloading data for the maching learning model</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2021-01-03T00:00:00-06:00" itemprop="datePublished">
+        Jan 3, 2021
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      4 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/project_notes/categories/#soccer">soccer</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/project_notes/categories/#machine learning">machine learning</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/project_notes/categories/#webscraping">webscraping</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-wrap flex-justify-end">
+          <div class="px-2">
+
+    <a href="https://github.com/rdpharr/project_notes/tree/master/_notebooks/2021-01-03-eurofootball_match_scraper.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/project_notes/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://mybinder.org/v2/gh/rdpharr/project_notes/master?filepath=_notebooks%2F2021-01-03-eurofootball_match_scraper.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/project_notes/assets/badges/binder.svg" alt="Open In Binder"/>
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/rdpharr/project_notes/blob/master/_notebooks/2021-01-03-eurofootball_match_scraper.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/project_notes/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2021-01-03-eurofootball_match_scraper.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The philosophy behind this model is this: people have been trying to figure out the best stat for predicting match outcomes for decades, we don't need to create something new. We can base the model on who has the best stats &amp; probably get a great result. We'll also add in the odds from the casinos, but that's later.</p>
+<p>Right now, we need to download the stats for all those games. on <a href="http://fbref.com">fbref.com</a>, we see 122 different stats per team per game. Sometimes these are at the player level, sometimes at the team level. For this model, I am going to do all calculations at the team level. You'll see that we'll get a good result.</p>
+<p>This post is just the web scraper. The next post will build and train a model using the odds from the previous post and the matches from this post.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
+
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The next cell processes the schedule pages since 2017 and grabs the links for each indivual match. Before 2017, the stats on fbref are different, not as complete.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sched_pages</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;https://fbref.com/en/comps/9/schedule/Premier-League-Scores-and-Fixtures&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;https://fbref.com/en/comps/9/1631/schedule/2017-2018-Premier-League-Scores-and-Fixtures&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;https://fbref.com/en/comps/9/1889/schedule/2018-2019-Premier-League-Scores-and-Fixtures&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;https://fbref.com/en/comps/9/3232/schedule/2019-2020-Premier-League-Scores-and-Fixtures&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;https://fbref.com/en/comps/13/3243/schedule/2019-2020-Ligue-1-Scores-and-Fixtures&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;https://fbref.com/en/comps/13/2104/schedule/2018-2019-Ligue-1-Scores-and-Fixtures&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;https://fbref.com/en/comps/13/1632/schedule/2017-2018-Ligue-1-Scores-and-Fixtures&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;https://fbref.com/en/comps/13/schedule/Ligue-1-Scores-and-Fixtures&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;https://fbref.com/en/comps/20/3248/schedule/2019-2020-Bundesliga-Scores-and-Fixtures&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;https://fbref.com/en/comps/20/2109/schedule/2018-2019-Bundesliga-Scores-and-Fixtures&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;https://fbref.com/en/comps/20/1634/schedule/2017-2018-Bundesliga-Scores-and-Fixtures&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;https://fbref.com/en/comps/20/schedule/Bundesliga-Scores-and-Fixtures&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;https://fbref.com/en/comps/11/3260/schedule/2019-2020-Serie-A-Scores-and-Fixtures&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;https://fbref.com/en/comps/11/1896/schedule/2018-2019-Serie-A-Scores-and-Fixtures&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;https://fbref.com/en/comps/11/1640/schedule/2017-2018-Serie-A-Scores-and-Fixtures&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;https://fbref.com/en/comps/11/schedule/Serie-A-Scores-and-Fixtures&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;https://fbref.com/en/comps/12/3239/schedule/2019-2020-La-Liga-Scores-and-Fixtures&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;https://fbref.com/en/comps/12/1886/schedule/2018-2019-La-Liga-Scores-and-Fixtures&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;https://fbref.com/en/comps/12/1652/schedule/2017-2018-La-Liga-Scores-and-Fixtures&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;https://fbref.com/en/comps/12/chedule/La-Liga-Scores-and-Fixtures&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="n">match_pages</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sched_pages</span><span class="p">:</span>
+    <span class="n">html</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+    <span class="n">match_url_regex</span> <span class="o">=</span> <span class="s2">&quot;\/en\/matches\/.</span><span class="si">{8}</span><span class="s2">\/[^</span><span class="se">\&quot;</span><span class="s2">]+&quot;</span>
+    <span class="n">matches</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">match_url_regex</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
+    <span class="n">match_pages</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">match_pages</span><span class="p">)</span><span class="si">}</span><span class="s2"> matches...&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>found 6110 matches...
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Here is the routine that parses the match data. The inline comments give some detail. There is an imporvement needed on to get the full data for the goalkeepers, if more than one is used in the match. This is a pretty rare event, so I haven't written the code to handle it yet.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">parse_match</span><span class="p">(</span><span class="n">html</span><span class="p">):</span>
+    <span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;lxml&#39;</span><span class="p">)</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1"># get game data</span>
+    <span class="n">match</span><span class="p">[</span><span class="s1">&#39;game_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">match</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;span&#39;</span><span class="p">,{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span><span class="s1">&#39;venuetime&#39;</span><span class="p">})[</span><span class="s1">&#39;data-venue-date&#39;</span><span class="p">]</span>
+    <span class="n">match</span><span class="p">[</span><span class="s1">&#39;game_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;span&#39;</span><span class="p">,{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span><span class="s1">&#39;venuetime&#39;</span><span class="p">})[</span><span class="s1">&#39;data-venue-time&#39;</span><span class="p">]</span>
+    
+    <span class="c1"># get scores</span>
+    <span class="n">scorebox</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">,{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span><span class="s1">&#39;scorebox&#39;</span><span class="p">})</span>
+    <span class="n">match</span><span class="p">[</span><span class="s1">&#39;away_team&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scorebox</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">,{</span><span class="s1">&#39;itemprop&#39;</span><span class="p">:</span><span class="s1">&#39;performer&#39;</span><span class="p">})[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">match</span><span class="p">[</span><span class="s1">&#39;home_team&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scorebox</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">,{</span><span class="s1">&#39;itemprop&#39;</span><span class="p">:</span><span class="s1">&#39;performer&#39;</span><span class="p">})[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">match</span><span class="p">[</span><span class="s1">&#39;away_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scorebox</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">,{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span><span class="s1">&#39;score&#39;</span><span class="p">})[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">match</span><span class="p">[</span><span class="s1">&#39;home_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scorebox</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">,{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span><span class="s1">&#39;score&#39;</span><span class="p">})[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">match</span><span class="p">[</span><span class="s1">&#39;away_score_xg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scorebox</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">,{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span><span class="s1">&#39;score_xg&#39;</span><span class="p">})[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">match</span><span class="p">[</span><span class="s1">&#39;home_score_xg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scorebox</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">,{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span><span class="s1">&#39;score_xg&#39;</span><span class="p">})[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    
+    <span class="c1"># get stats from footers of stat tables</span>
+    <span class="n">stat_table_regexes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s1">&#39;stats_.+_passing$&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;stats_.+_passing_types&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;stats_.+_defense&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;stats_.+_possession&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;stats_.+_misc&#39;</span>
+    <span class="p">]</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">stat_table_regexes</span><span class="p">:</span>
+        <span class="n">tbls</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;table&#39;</span><span class="p">,{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">p</span><span class="p">)})</span>
+        <span class="c1"># tbls[1] is the away team</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">tbls</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;tfoot&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;td&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">text</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span> <span class="n">match</span><span class="p">[</span><span class="s1">&#39;away_&#39;</span><span class="o">+</span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;data-stat&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">text</span>
+        <span class="c1"># tbls[0] is the home team</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">tbls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;tfoot&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;td&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">text</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span> <span class="n">match</span><span class="p">[</span><span class="s1">&#39;home_&#39;</span><span class="o">+</span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;data-stat&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">text</span>
+    
+    <span class="c1">#goalkeeper stats from first row of goalkeepers (no summary row) </span>
+    <span class="c1">#TODO: get all goalkeepers in match if more than one</span>
+    <span class="n">tbls</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;table&#39;</span><span class="p">,{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;keeper_stats_&#39;</span><span class="p">)})</span>
+    <span class="c1"># tbls[1] is the away team</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">tbls</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;tr&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;td&#39;</span><span class="p">)[</span><span class="mi">3</span><span class="p">:]:</span> <span class="c1"># skip the first 3 columns (name, age, country)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">text</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span> <span class="n">match</span><span class="p">[</span><span class="s1">&#39;away_&#39;</span><span class="o">+</span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;data-stat&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">text</span>
+
+    <span class="c1"># tbls[0] is the home team</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">tbls</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;tr&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;td&#39;</span><span class="p">)[</span><span class="mi">3</span><span class="p">:]:</span> <span class="c1"># skip the first 3 columns (name, age, country)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">text</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span> <span class="n">match</span><span class="p">[</span><span class="s1">&#39;home_&#39;</span><span class="o">+</span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;data-stat&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">text</span>
+    <span class="k">return</span> <span class="n">match</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Below is the iterator to parse all of the matches. If there's an error parsing the match, it provides the link. Most of these are delayed matches. I haven't found any other types of problems.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">match_pages</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">match_pages</span><span class="p">)</span>
+<span class="n">matches</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">match_pages</span><span class="p">:</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;https://fbref.com&#39;</span><span class="o">+</span><span class="n">m</span>
+    <span class="n">html</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">parse_match</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="c1"># no advanced stats, or match was cancelled. Uncomment the below line to see examples</span>
+        <span class="c1"># print(url)</span>
+        <span class="k">continue</span>
+    <span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span><span class="o">%</span><span class="k">250</span>==0: print(len(matches), dt.datetime.now().time())
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>250 09:22:09.653225
+500 09:25:59.893262
+750 09:30:01.152984
+1000 09:34:28.578578
+1250 09:38:47.283655
+1500 09:43:17.526664
+1750 09:47:39.714315
+2000 09:51:46.943318
+2250 09:55:56.813498
+2500 09:59:37.172234
+2750 10:03:53.583911
+3000 10:07:55.117692
+3250 10:13:05.095473
+3500 10:18:18.249996
+3750 10:26:15.529503
+4000 10:37:23.986049
+4250 10:47:48.410901
+4500 10:57:33.316190
+4750 11:06:57.992304
+5000 11:16:44.733365
+5250 11:28:27.944883
+5500 11:40:59.823845
+5750 11:50:52.897307
+6000 12:00:06.576418
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Last, we'll save the output to disk.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;matches.csv.gzip&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s1">&#39;gzip&#39;</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(6001, 251)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>That's 253 columns per match. It's a lot of stats...</p>
+<ul>
+<li>5 for game identification: game_id, date, time, home team and away team</li>
+<li>4 for score (score and score_xg, home and away)</li>
+<li>122 individual stats for each team</li>
+</ul>
+<p>I don't want to do a full EDA of this dataset in this notebook, but let's at least run a correlation to see which stats might be important. Starting with home team vs their score.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;matches.csv.gzip&quot;</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s1">&#39;gzip&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">home_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="s1">&#39;home&#39;</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;home_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;home_score&#39;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="n">home_columns</span><span class="p">]</span><span class="o">.</span><span class="n">corr</span><span class="p">()[</span><span class="s1">&#39;home_score&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)[:</span><span class="mi">25</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>home_score                       1.000000
+home_goals_against_gk            0.989576
+home_assists                     0.844361
+home_psxg_gk                     0.762950
+home_save_pct                    0.614315
+home_score_xg                    0.592121
+home_shots_on_target_against     0.550086
+home_xa                          0.522682
+home_touches_att_pen_area        0.275894
+home_assisted_shots              0.272490
+home_through_balls               0.251706
+home_passes_completed_short      0.250673
+home_passes_pct                  0.245690
+home_passes_ground               0.238994
+home_passes_short                0.237699
+home_passes_pct_long             0.233341
+home_passes_completed            0.226572
+home_passes_received             0.226568
+home_passes_high                 0.214659
+home_carries                     0.213738
+home_pens_won                    0.211345
+home_pass_targets                0.210090
+home_touches_live_ball           0.208687
+home_passes_live                 0.207207
+home_passes_into_penalty_area    0.206309
+Name: home_score, dtype: float64</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>psxg_gk is "Post-Shot Expected Goals", a goalkeeper stat. Hover over the item on <a href="http://fbref.com">fbref.com</a> to find out what each is.</p>
+<p>Also let's see what correlates with the away team score, in case its different.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">away_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="s1">&#39;away&#39;</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;away_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;away_score&#39;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="n">away_columns</span><span class="p">]</span><span class="o">.</span><span class="n">corr</span><span class="p">()[</span><span class="s1">&#39;away_score&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)[:</span><span class="mi">25</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>away_score                          1.000000
+away_assists                        0.844739
+away_score_xg                       0.611637
+away_xa                             0.529720
+away_assisted_shots                 0.313385
+away_touches_att_pen_area           0.291722
+away_through_balls                  0.245553
+away_pens_won                       0.215357
+away_passes_into_penalty_area       0.201255
+away_passes_completed_short         0.179558
+away_passes_progressive_distance    0.172739
+away_passes_short                   0.170302
+away_touches_live_ball              0.163794
+away_passes_received                0.162729
+away_passes_completed               0.162645
+away_passes_pct                     0.161670
+away_passes_ground                  0.159949
+away_touches                        0.157365
+away_pass_targets                   0.152591
+away_passes_pct_long                0.150881
+away_passes_live                    0.149583
+away_carries                        0.145819
+away_passes_total_distance          0.144827
+away_passes_right_foot              0.144568
+away_passes                         0.142275
+Name: away_score, dtype: float64</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This is interesting, but I'm much more interested in how a machine learning model feels about the stats. We'll do that next.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="rdpharr/project_notes"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/project_notes/soccer/machine%20learning/webscraping/2021/01/03/eurofootball_match_scraper.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/project_notes/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/project_notes/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/project_notes/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>My data and analysis blog</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/rdpharr" title="rdpharr"><svg class="svg-icon grey"><use xlink:href="/project_notes/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/rdpharr" title="rdpharr"><svg class="svg-icon grey"><use xlink:href="/project_notes/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
